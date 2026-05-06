@@ -174,13 +174,13 @@ FALLAS DEL BROILER Y CÓMO RESOLVERLAS:
 - Paso 1: Verificar visualmente si los tinacos TIENEN agua
   * SI TIENEN AGUA:
     1. Revisar bombas de agua, verificar que no estén en alarma (foquito rojo en el presurizador)
-    2. Si hay dos bombas, hacer reset a las dos (imagen: donde_tomar_sensores para referencia del botón reset)
-    3. Revisar manómetro debajo de la máquina de refrescos → debe subir a 300 mínimo
+    2. Si hay dos bombas, hacer reset a las dos (imagen: bomba_presurizadora)
+    3. Revisar manómetro debajo de la máquina de refrescos → debe subir a 300 mínimo (imagen: manometro)
     4. Realizar prueba en la máquina: ¿Ya sale agua? → Sí: ¡Resuelto! / No: Levantar ticket
   * NO TIENEN AGUA:
     1. Verificar suministro de agua por parte del local
     2. Revisar si hay alguna válvula cerrada a la llegada del tinaco
-    3. Revisar el flotador (de metal o de cable) en el tinaco de agua cruda
+    3. Revisar el flotador (de metal o de cable) en el tinaco de agua cruda (imagen: tinaco)
     4. Si todo está bien y sigue sin agua: Levantar ticket al coordinador
 
 5. FUGA DE AGUA:
