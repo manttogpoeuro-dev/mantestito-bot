@@ -169,7 +169,7 @@ async def manejar_mensaje(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         # Llamar a Claude API
         response = client.messages.create(
-            model="claude-sonnet-4-20250514",
+            model="claude-3-5-haiku-20241022",
             max_tokens=1000,
             system=SYSTEM_PROMPT,
             messages=conversaciones[user_id]
