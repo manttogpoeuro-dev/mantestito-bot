@@ -170,18 +170,48 @@ FALLAS DEL BROILER Y CÓMO RESOLVERLAS:
   3. ¿Vuelve la falla? → No: ¡Resuelto! / Sí: Levantar ticket al coordinador
 
 4. AGUA REFRESCO:
-- El sistema normalmente cuenta con tinacos de almacenamiento
-- Paso 1: Verificar visualmente si los tinacos TIENEN agua
-  * SI TIENEN AGUA:
-    1. Revisar bombas de agua, verificar que no estén en alarma (foquito rojo en el presurizador)
-    2. Si hay dos bombas, hacer reset a las dos (imagen: bomba_presurizadora)
-    3. Revisar manómetro debajo de la máquina de refrescos → debe subir a 300 mínimo (imagen: manometro)
-    4. Realizar prueba en la máquina: ¿Ya sale agua? → Sí: ¡Resuelto! / No: Levantar ticket
-  * NO TIENEN AGUA:
-    1. Verificar suministro de agua por parte del local
-    2. Revisar si hay alguna válvula cerrada a la llegada del tinaco
-    3. Revisar el flotador (de metal o de cable) en el tinaco de agua cruda (imagen: tinaco)
-    4. Si todo está bien y sigue sin agua: Levantar ticket al coordinador
+El sistema cuenta con dos tinacos y dos bombas presurizadoras:
+- Tinaco de agua CRUDA: se alimenta de la presión de agua del local/plaza
+- Bomba presurizadora #1: mete agua cruda al sistema de filtros
+- Sistema de filtros
+- Tinaco de agua PURIFICADA: recibe el agua ya filtrada
+- Bomba presurizadora #2: toma agua purificada y la introduce al filtro de la máquina de refresco
+- Manómetro: debe marcar 300 mínimo (imagen: manometro)
+- Máquina de refresco
+
+DIAGNÓSTICO PASO A PASO:
+
+Paso 1 - Verificar tinaco de agua CRUDA (imagen: tinaco):
+  * ¿Tiene agua? 
+  * NO tiene agua → problema de suministro del local, verificar:
+    - Si hay válvula cerrada a la llegada del tinaco
+    - Revisar el flotador (de metal o cable) en el tinaco de agua cruda (imagen: tinaco)
+    - Si todo está bien y sigue sin agua: levantar ticket al coordinador
+  * SÍ tiene agua → continuar al Paso 2
+
+Paso 2 - Verificar Bomba presurizadora #1 (imagen: bomba_presurizadora):
+  * Verificar que esté encendida y sin alarma (foquito rojo en el presurizador)
+  * Si tiene alarma o está apagada: hacer reset al botón de la bomba
+  * Continuar al Paso 3
+
+Paso 3 - Verificar tinaco de agua PURIFICADA (imagen: tinaco):
+  * ¿Tiene agua?
+  * NO tiene agua → posible problema en filtros o bomba #1, levantar ticket
+  * SÍ tiene agua → continuar al Paso 4
+
+Paso 4 - Verificar Bomba presurizadora #2 (imagen: bomba_presurizadora):
+  * Verificar que esté encendida y sin alarma (foquito rojo en el presurizador)
+  * Si tiene alarma o está apagada: hacer reset al botón de la bomba
+  * Continuar al Paso 5
+
+Paso 5 - Verificar manómetro (imagen: manometro):
+  * Debe marcar 300 mínimo
+  * Si no llega a 300: posible problema en bomba #2 o filtros, levantar ticket
+
+Paso 6 - Prueba final en la máquina de refresco:
+  * ¿Ya sale agua/refresco?
+  * SÍ: ¡Problema resuelto!
+  * NO: Levantar ticket al coordinador
 
 5. FUGA DE AGUA:
 - Similar al flujo de estaciones de servicio
