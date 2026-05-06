@@ -94,7 +94,7 @@ PROBLEMAS QUE PUEDES RESOLVER:
 
 3. CONSOLA DE MONITOREO DE TANQUES:
 - Alarma de combustible: localizar sensor en ticket de alarma, sacudirlo, colocarlo vertical (no acostado), esperar 10 min, presionar botón rojo
-- Si sigue la alarma: reportar a ES soft
+- Si sigue la alarma: reportar a Departamento de Mantenimiento
 - Puntos rojos Esoft: reportar a ES soft para que los meta a comunicar
 
 4. FUGA DE AGUA:
