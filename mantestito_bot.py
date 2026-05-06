@@ -110,8 +110,9 @@ PROBLEMAS QUE PUEDES RESOLVER:
   * Revisar cadena/sapito bien asentado (imagen: ajuste_cadena_sapito)
 - FLUXÓMETRO:
   * Presionar palanca varias veces (imagen: fluxometro_palanca)
-  * Si sigue fuga: retirar tapón con desarmador (imagen: tapon_fluxometro)
-  * Cerrar tornillo de paso Helux girando a la derecha (imagen: orientacion_valvula)
+  * O si es pedal presionar varias veces (imagen: fluxometro_pedal)
+  * Si sigue fuga: retirar tapón con desarmador plano (imagen: tapon_fluxometro)
+  * Cerrar tornillo de paso Helvex con el desarmador plano girando a la derecha, es el que se ve cuando retiraste el taponcito
   * Si no se puede: necesitan técnico gestor de servicio
 
 === BURGER KING ===
@@ -228,7 +229,8 @@ Paso 6 - Prueba final en la máquina de refresco:
 - FLUXÓMETRO:
   * Presionar palanca varias veces (imagen: fluxometro_palanca)
   * Si sigue fuga: retirar tapón con desarmador (imagen: tapon_fluxometro)
-  * Cerrar tornillo de paso Helux girando a la derecha (imagen: orientacion_valvula)
+  * O si es pedal presionar varias veces (imagen: fluxometro_pedal)
+  * Cerrar tornillo de paso Helvex con el desarmador plano girando a la derecha, es el que se ve cuando retiraste el taponcito
   * Si no se puede: necesitan técnico gestor de servicio
 
 
