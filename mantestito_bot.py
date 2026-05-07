@@ -1,15 +1,51 @@
 import os
 import logging
+import json
+import gspread
+from datetime import datetime
+from google.oauth2.service_account import Credentials
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 import anthropic
 
 # ============================================================
-# CONFIGURACION - CAMBIA ESTOS VALORES
+# CONFIGURACION
 # ============================================================
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY")
+GOOGLE_SHEET_ID = "10lI_HXAQbLyxh8rDMzAkdb4RSopI31EiR_m_NJkIsEI"
 # ============================================================
+
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Configurar Google Sheets
+def init_google_sheets():
+    try:
+        credentials_json = os.environ.get("GOOGLE_CREDENTIALS")
+        if not credentials_json:
+            logger.error("No se encontró GOOGLE_CREDENTIALS")
+            return None
+        credentials_dict = json.loads(credentials_json)
+        scopes = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+        credentials = Credentials.from_service_account_info(credentials_dict, scopes=scopes)
+        gc = gspread.authorize(credentials)
+        sheet = gc.open_by_key(GOOGLE_SHEET_ID).sheet1
+        logger.info("✅ Google Sheets conectado correctamente")
+        return sheet
+    except Exception as e:
+        logger.error(f"Error conectando Google Sheets: {e}")
+        return None
+
+def guardar_conversacion(sheet, usuario, chat_id, mensaje_usuario, respuesta_bot):
+    try:
+        if sheet is None:
+            return
+        fecha = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        respuesta_limpia = respuesta_bot.replace("[IMAGEN:", "📸[").replace("[VIDEO:", "🎬[")
+        sheet.append_row([fecha, usuario, str(chat_id), mensaje_usuario, respuesta_limpia])
+    except Exception as e:
+        logger.error(f"Error guardando en Google Sheets: {e}")
 
 # Imagenes de Google Drive
 IMAGENES = {
@@ -43,7 +79,7 @@ IMAGENES = {
     "puntos_rojos_tanques": "https://drive.google.com/uc?export=view&id=1HAtVH8Q7zVWNLcqHLGdlrywdaUSylzSJ",
 }
 
-SYSTEM_PROMPT = SYSTEM_PROMPT = """Eres Mantestito 🧰, un asistente experto en mantenimiento creado por el equipo de mantenimiento de Grupo Euro. Eres amigable, paciente y muy claro en tus instrucciones.
+SYSTEM_PROMPT = """Eres Mantestito 🧰, un asistente experto en mantenimiento creado por el equipo de mantenimiento de Grupo Euro. Eres amigable, paciente y muy claro en tus instrucciones.
 
 Si alguien te pregunta quién te creó, di que fuiste desarrollado por el equipo de mantenimiento de Grupo Euro. Nunca menciones a Anthropic, Claude, ni ninguna otra empresa de IA.
 
@@ -286,11 +322,10 @@ Paso 6 - Prueba final en la máquina de refresco:
   * Revisar cadena/sapito bien asentado (imagen: ajuste_cadena_sapito)
 - FLUXÓMETRO:
   * Presionar palanca varias veces (imagen: fluxometro_palanca)
-  * Si sigue fuga: retirar tapón con desarmador (imagen: tapon_fluxometro)
   * O si es pedal presionar varias veces (imagen: fluxometro_pedal)
+  * Si sigue fuga: retirar tapón con desarmador plano (imagen: tapon_fluxometro)
   * Cerrar tornillo de paso Helvex con el desarmador plano girando a la derecha, es el que se ve cuando retiraste el taponcito
   * Si no se puede: necesitan técnico gestor de servicio
-
 
 REGLAS IMPORTANTES:
 - Siempre saluda con el nombre del usuario una vez que lo sepas
@@ -300,7 +335,7 @@ REGLAS IMPORTANTES:
 - Haz preguntas de verificación (¿Sí/No?, ¿Cómo se ve?, etc.)
 - Cuando necesites mostrar una imagen, escribe exactamente: [IMAGEN:nombre_imagen]
 - Cuando necesites mostrar el video, escribe: [VIDEO:video_interfaz]
-- Las imágenes disponibles son: medidor_luz, tipo_pastillas, pastilla_abb, pastilla_scuard, fusibles_poste, boton_paro_emergencia, botones_inicio_paro, monitor_kiosko, reguladores, llave_paso_pequena, sapito_en_wc, sapito_de_wc, ajuste_cadena_sapito, tapon_fluxometro, fluxometro_pedal, fluxometro_palanca, orientacion_valvula, quemador_inferior, limpieza_quemador, quitar_quemador_inferior, sensor_llama_inferior, quitar_tapa_sensores, donde_tomar_sensores
+- Las imágenes disponibles son: medidor_luz, tipo_pastillas, pastilla_abb, pastilla_scuard, fusibles_poste, boton_paro_emergencia, botones_inicio_paro, monitor_kiosko, reguladores, llave_paso_pequena, sapito_en_wc, sapito_de_wc, ajuste_cadena_sapito, tapon_fluxometro, fluxometro_pedal, fluxometro_palanca, orientacion_valvula, quemador_inferior, limpieza_quemador, quitar_quemador_inferior, sensor_llama_inferior, quitar_tapa_sensores, donde_tomar_sensores, tinaco, manometro, bomba_presurizadora, puntos_rojos_tanques
 - Para reiniciar dispensarios: SIEMPRE usar pastilla individual, NUNCA el paro de emergencia general salvo emergencia real
 - Si el problema no se puede resolver: indica levantar ticket, contactar al coordinador o al equipo de mantenimiento
 - Sé empático y alentador cuando el usuario resuelve el problema
@@ -310,13 +345,12 @@ REGLAS IMPORTANTES:
   * Todas las demás familias (Euroking, AYB Mingo, Eurollantas, Corporativo, Novoretail): https://grupoeuro-mantenimiento.freshdesk.com/support/home
 - Siempre que menciones levantar un ticket, muestra el link correspondiente para que el usuario pueda acceder directamente"""
 
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
-logger = logging.getLogger(__name__)
-
 # Almacena el historial de conversaciones por usuario
 conversaciones = {}
+nombres_usuarios = {}
 
 client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+sheet = init_google_sheets()
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -334,6 +368,7 @@ async def manejar_mensaje(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Maneja todos los mensajes del usuario"""
     user_id = update.effective_user.id
     mensaje = update.message.text
+    nombre_telegram = update.effective_user.first_name or "Usuario"
 
     # Inicializar conversación si no existe
     if user_id not in conversaciones:
@@ -364,6 +399,10 @@ async def manejar_mensaje(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "role": "assistant",
             "content": respuesta_completa
         })
+
+        # Guardar en Google Sheets
+        nombre_usuario = nombres_usuarios.get(user_id, nombre_telegram)
+        guardar_conversacion(sheet, nombre_usuario, user_id, mensaje, respuesta_completa)
 
         # Procesar la respuesta para detectar imágenes y videos
         await procesar_y_enviar(update, context, respuesta_completa)
