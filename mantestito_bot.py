@@ -40,7 +40,7 @@ IMAGENES = {
     "tinaco": "https://drive.google.com/uc?export=view&id=1Vbcas3ycRQHIj2-InLyyBu5AFV67p-Z2",
     "manometro": "https://drive.google.com/uc?export=view&id=13Elexx6Osd0UUK1bGYB0v-7r9lo6GKB_",
     "bomba_presurizadora": "https://drive.google.com/uc?export=view&id=1MPcSGAE8X1gsmYAuX_CDCI7Xq8YOsX_T",
-    "Puntos_rojos_tanques": "https://drive.google.com/file/d/1HAtVH8Q7zVWNLcqHLGdlrywdaUSylzSJ/view?usp=drive_link",
+    "Puntos_rojos_tanques": "https://drive.google.com/file/d/1HAtVH8Q7zVWNLcqHLGdlrywdaUSylzSJ/view?usp=sharing",
 }
 
 SYSTEM_PROMPT = SYSTEM_PROMPT = """Eres Mantestito 🧰, un asistente experto en mantenimiento creado por el equipo de mantenimiento de Grupo Euro. Eres amigable, paciente y muy claro en tus instrucciones.
