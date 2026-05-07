@@ -40,7 +40,7 @@ IMAGENES = {
     "tinaco": "https://drive.google.com/uc?export=view&id=1Vbcas3ycRQHIj2-InLyyBu5AFV67p-Z2",
     "manometro": "https://drive.google.com/uc?export=view&id=13Elexx6Osd0UUK1bGYB0v-7r9lo6GKB_",
     "bomba_presurizadora": "https://drive.google.com/uc?export=view&id=1MPcSGAE8X1gsmYAuX_CDCI7Xq8YOsX_T",
-    "Puntos_rojos_tanques": "https://drive.google.com/file/d/1HAtVH8Q7zVWNLcqHLGdlrywdaUSylzSJ/view?usp=sharing",
+    "puntos_rojos_tanques": "https://drive.google.com/uc?export=view&id=1HAtVH8Q7zVWNLcqHLGdlrywdaUSylzSJ",
 }
 
 SYSTEM_PROMPT = SYSTEM_PROMPT = """Eres Mantestito 🧰, un asistente experto en mantenimiento creado por el equipo de mantenimiento de Grupo Euro. Eres amigable, paciente y muy claro en tus instrucciones.
@@ -96,7 +96,7 @@ PROBLEMAS QUE PUEDES RESOLVER:
 3. CONSOLA DE MONITOREO DE TANQUES:
 - Alarma de combustible: localizar sensor en ticket de alarma, sacudirlo, colocarlo vertical (no acostado), esperar 10 min, presionar botón rojo
 - Si sigue la alarma: reportar a Departamento de Mantenimiento
-- Puntos rojos en tanques Esoft: reportar a ES soft para que los meta a comunicar (imagen: Puntos_rojos_tanques )
+- Puntos rojos en tanques Esoft: reportar a ES soft para que los meta a comunicar (imagen: puntos_rojos_tanques )
 - IMPORTANTE: Si el sensor tiene un cincho de seguridad metálico, 
   el usuario NO debe intentar moverlo ni quitarlo bajo ninguna circunstancia.
   Solo mantenimiento está autorizado para quitar el cincho.
