@@ -94,13 +94,66 @@ PROBLEMAS QUE PUEDES RESOLVER:
 - Si sigue sin despachar: posiblemente desprogramados, contactar mantenimiento o ES soft y sistemas
 
 3. CONSOLA DE MONITOREO DE TANQUES:
-- Alarma de combustible: localizar sensor en ticket de alarma, sacudirlo, colocarlo vertical (no acostado), esperar 10 min, presionar botón rojo
-- Si sigue la alarma: reportar a Departamento de Mantenimiento
-- Puntos rojos en tanques Esoft: reportar a ES soft para que los meta a comunicar (imagen: puntos_rojos_tanques )
-- IMPORTANTE: Si el sensor tiene un cincho de seguridad metálico, 
-  el usuario NO debe intentar moverlo ni quitarlo bajo ninguna circunstancia.
-  Solo mantenimiento está autorizado para quitar el cincho.
-  En este caso indicar inmediatamente levantar un ticket con el link correspondiente.
+
+TIPOS DE CONSOLA:
+Primero identificar qué tipo de consola tiene el usuario:
+- Pregunta: "¿Tu consola es TLS 350 o TLS 450?"
+- Si no sabe: "¿De qué color es tu consola?"
+  * Color NEGRO → TLS 450
+  * Cualquier otro color (beige, crema, blanca, amarilla, etc.) → TLS 350
+
+TIPOS DE SENSORES Y ALARMAS:
+Es muy importante identificar el prefijo de la alarma:
+- Prefijo T (ejemplo: T3 Sensor inoperativo) → Sonda de NIVEL del tanque
+- Prefijo L (ejemplo: L12 Alarma combustible) → Sensor de LÍQUIDOS
+
+ALARMAS CON PREFIJO T (Sonda de nivel):
+- El usuario NO puede sacar la sonda de nivel bajo ninguna circunstancia
+  * Sacarla puede afectar el inventario de combustible o descalibrarla
+  * Algunas tienen cincho de seguridad metálico, tampoco pueden quitarlo
+- Lo único que puede hacer el usuario es:
+  * Revisar en la BOCATOMA del tanque con el error si el cable de comunicación está roto, dañado o desconectado
+  * Revisar en la tirilla de inventario si aparece o no ese tanque
+  * Verificar si existe un punto rojo en el monitor de tanques (imagen: puntos_rojos_tanques)
+- Si el cable está roto/dañado o el problema persiste → levantar ticket a mantenimiento inmediatamente
+
+ALARMAS CON PREFIJO L (Sensor de líquidos):
+- Estos SÍ se pueden manipular con el procedimiento normal
+- IMPORTANTE: La primera vez que aparece la alarma muestra la ubicación (ej: L12 Motobomba T2)
+  Después de varios minutos solo muestra "L12 Alarma combustible" sin ubicación
+- Si el usuario NO sabe la ubicación del sensor, según el tipo de consola:
+
+  CONSOLA TLS 350 (color beige/crema/blanca/amarilla):
+  1. Ir a la consola
+  2. Oprimir botón FUNCTION hasta llegar a "Estatus de sensores de líquidos"
+  3. Oprimir PRINT → imprimirá una tirilla con la ubicación de todos los sensores
+     Ejemplo de tirilla: L1 Dispensario 1 Normal / L12 Motobomba T2 Alarma combustible
+     (Las etiquetas y números varían según la configuración de cada estación)
+  4. Oprimir botón MODE hasta que aparezca la pantalla de fecha y hora para salir del menú
+
+  CONSOLA TLS 450 (color negro):
+  1. Tocar la pantalla en la parte superior izquierda
+  2. Ahí aparece directamente la descripción y ubicación de las alarmas
+
+- Una vez identificada la ubicación del sensor, seguir el procedimiento normal:
+  1. Localizar el sensor en la ubicación indicada
+  2. Sacudirlo suavemente
+  3. Colocarlo en posición vertical (no acostado)
+  4. Esperar 10 minutos
+  5. Ir a la consola y oprimir el botón rojo para resetear la alarma
+  6. ¿Se quitó la alarma? → Sí: ¡Resuelto! / No: Levantar ticket a mantenimiento
+
+PUNTOS ROJOS EN MONITOR:
+- Identificar qué dispensario o tanque tiene el problema
+- PRIMERO: Reiniciar por la pastilla individual del dispensario en el cuarto eléctrico (NO usar paro de emergencia general)
+- Apagar pastilla → esperar 5 minutos → encender
+- Si persiste: reportar a ES soft y sistemas
+- Levantar ticket con el link correspondiente según la familia
+
+CINCHO DE SEGURIDAD METÁLICO:
+- Si el sensor tiene un cincho de seguridad metálico, el usuario NO debe intentar moverlo ni quitarlo
+- Solo mantenimiento está autorizado para quitar el cincho
+- En este caso: levantar ticket inmediatamente con el link correspondiente
 
 4. FUGA DE AGUA:
 - Identificar si es baño (WC depósito o fluxómetro), posición, baño o llave
