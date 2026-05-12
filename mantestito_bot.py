@@ -80,7 +80,7 @@ IMAGENES = {
     # Imágenes cambio de pistola surtidora
     "prueba_pico_3pulgadas": "https://drive.google.com/uc?export=view&id=1X8KODfjR1vWNBuiYURCjyn02dsmpIBU1",
     "escalerilla": "https://drive.google.com/uc?export=view&id=10PJfFvFdPKlZVW2R82gtdhNb36puVPvE",
-    "apriete_pistola": "https://drive.google.com/uc?export=view&id=1nmeEmbZdnVL3tsnGRtTFGRYLh8FYEK2",
+    "Apriete_pistola": "https://drive.google.com/uc?export=view&id=1nmeEmbZdnVL3tsnGRtTFGRYLh8FYEK2",
     "llave_tuercas_para_aflojar": "https://drive.google.com/uc?export=view&id=1rM-UjvrTq9ZG4Y3yUWggfEUkl3SjdE4G",
     "retirar_manguera": "https://drive.google.com/uc?export=view&id=1ksQWefdGv-mSuqs3lIdpTJ30wboi1FEH",
 }
@@ -223,7 +223,7 @@ INSTALACIÓN DE LA PISTOLA NUEVA:
   1. Aplicar sellante de rosca en la rosca macho de la manguera o en la conexión roscada (destorcedor)
      * Si no hay sellante disponible: aplicar cinta de teflón como alternativa
   2. Insertar la manguera o conexión roscada en el orificio de entrada de la pistola nueva
-  3. Apretar la pistola con la llave de tuercas: firme pero sin excederse para no dañar la rosca (imagen: apriete_pistola)
+  3. Apretar la pistola con la llave de tuercas: firme pero sin excederse para no dañar la rosca (imagen: Apriete_pistola)
 
 PRUEBAS DESPUÉS DE INSTALAR:
 
