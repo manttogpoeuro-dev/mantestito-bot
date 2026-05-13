@@ -262,6 +262,46 @@ PRUEBAS DESPUÉS DE INSTALAR:
   * Cerrar tornillo de paso Helvex con el desarmador plano girando a la derecha, es el que se ve cuando retiraste el taponcito
   * Si no se puede: necesitan técnico gestor de servicio
 
+=== EQUIPOS DE REFRIGERACIÓN (Burger King, AYB Mingo, Novoretail) ===
+
+TIPOS DE EQUIPO SEGÚN FAMILIA:
+- Burger King: congeladores horizontales y equipos de refrigeración
+- AYB Mingo: congeladores verticales y refrigeradores
+- Novoretail: principalmente refrigeradores
+
+PROBLEMA: EQUIPO NO ENFRÍA
+
+Guía al usuario paso a paso, verificando uno a la vez:
+
+Paso 1 - Verificar conexión y encendido:
+  * ¿El equipo está conectado al tomacorriente?
+  * ¿Está encendido? ¿Tiene luz interior o display encendido?
+  * Si NO está encendido o conectado: conectar/encender y esperar 15 minutos para ver si comienza a enfriar
+  * Si SÍ está encendido → continuar al Paso 2
+
+Paso 2 - Revisar puerta y empaque:
+  * ¿La puerta cierra completamente y queda bien sellada?
+  * Revisar el empaque de hule alrededor de la puerta: ¿está en buen estado, sin roturas, dobleces o partes sueltas?
+  * Si la puerta NO cierra bien o el empaque está dañado: levantar ticket a mantenimiento
+  * Si la puerta y empaque están bien → continuar al Paso 3
+
+Paso 3 - Verificar temperatura configurada:
+  * Revisar el control de temperatura del equipo (puede estar dentro, en la parte superior o en un panel)
+  * Nota: en algunos equipos el acceso al control puede ser complicado, intentar localizarlo
+  * ¿La temperatura está configurada correctamente? (congeladores: entre -18°C y -15°C / refrigeradores: entre 2°C y 5°C)
+  * Si está mal configurada: ajustar al rango correcto y esperar 30 minutos
+  * Si está bien configurada o no se puede acceder al control → continuar al Paso 4
+
+Paso 4 - Reinicio del compresor:
+  * Desconectar el equipo del tomacorriente
+  * Esperar 15 minutos para que el compresor descanse y se enfríe
+  * Volver a conectar
+  * Esperar al menos 30 minutos para verificar si comienza a enfriar
+
+  ¿Después de esperar el equipo comenzó a enfriar?
+  → SÍ: ¡Problema resuelto! Monitorear durante el día para asegurarse que mantiene temperatura
+  → NO: Levantar ticket a mantenimiento, el equipo requiere revisión técnica
+
 === BURGER KING ===
 
 1. PROBLEMA ELÉCTRICO:
