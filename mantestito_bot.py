@@ -421,6 +421,7 @@ Paso 6 - Prueba final en la máquina de refresco:
   * Si no se puede: necesitan técnico gestor de servicio
 
 REGLAS IMPORTANTES:
+- ANÁLISIS DE IMÁGENES: El usuario puede enviarte fotos de los equipos o piezas. Cuando recibas una imagen, analízala en el contexto del problema de mantenimiento que están resolviendo. Describe lo que ves, indica si está en buen estado o tiene alguna falla visible, y orienta al usuario sobre qué hacer. Si no puedes determinar el estado con claridad, pídele que tome otra foto con mejor ángulo o iluminación.
 - MANTÉN EL CONTEXTO: Una vez identificado el tipo de problema (sensor L, problema eléctrico,
   despacho, etc.), no cambies de flujo aunque el usuario mencione palabras que normalmente
   iniciarían otro diagnóstico. Por ejemplo, si estás en flujo de sensor L y el usuario
@@ -461,8 +462,78 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
+
+async def descargar_foto_base64(photo, context) -> str:
+    """Descarga una foto de Telegram y la convierte a base64"""
+    import base64
+    file = await context.bot.get_file(photo.file_id)
+    foto_bytes = await file.download_as_bytearray()
+    return base64.standard_b64encode(foto_bytes).decode("utf-8")
+
+
+async def manejar_foto(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Maneja mensajes con foto enviados por el usuario"""
+    user_id = update.effective_user.id
+    nombre_telegram = update.effective_user.first_name or "Usuario"
+    caption = update.message.caption or "El usuario envió esta imagen. Analízala en el contexto del problema de mantenimiento que estamos resolviendo y oriéntalo."
+
+    if user_id not in conversaciones:
+        conversaciones[user_id] = []
+
+    await context.bot.send_chat_action(chat_id=update.effective_chat.id, action="typing")
+
+    try:
+        photo = update.message.photo[-1]
+        imagen_base64 = await descargar_foto_base64(photo, context)
+
+        mensaje_con_imagen = {
+            "role": "user",
+            "content": [
+                {
+                    "type": "image",
+                    "source": {
+                        "type": "base64",
+                        "media_type": "image/jpeg",
+                        "data": imagen_base64
+                    }
+                },
+                {
+                    "type": "text",
+                    "text": caption
+                }
+            ]
+        }
+
+        conversaciones[user_id].append(mensaje_con_imagen)
+
+        response = client.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=1000,
+            system=SYSTEM_PROMPT,
+            messages=conversaciones[user_id]
+        )
+
+        respuesta_completa = response.content[0].text
+
+        conversaciones[user_id].append({
+            "role": "assistant",
+            "content": respuesta_completa
+        })
+
+        nombre_usuario = nombres_usuarios.get(user_id, nombre_telegram)
+        guardar_conversacion(sheet, nombre_usuario, user_id, f"[FOTO] {caption}", respuesta_completa)
+
+        await procesar_y_enviar(update, context, respuesta_completa)
+
+    except Exception as e:
+        logger.error(f"Error procesando foto: {e}")
+        await update.message.reply_text(
+            "Lo siento, tuve un problema al procesar la imagen. Por favor intenta de nuevo. 🔧"
+        )
+
+
 async def manejar_mensaje(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Maneja todos los mensajes del usuario"""
+    """Maneja todos los mensajes del usuario (texto)"""
     user_id = update.effective_user.id
     mensaje = update.message.text
     nombre_telegram = update.effective_user.first_name or "Usuario"
@@ -581,6 +652,7 @@ def main():
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("reset", reset))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, manejar_mensaje))
+    app.add_handler(MessageHandler(filters.PHOTO, manejar_foto))
 
     logger.info("🤖 Mantestito Bot iniciado!")
     app.run_polling(allowed_updates=Update.ALL_TYPES)
