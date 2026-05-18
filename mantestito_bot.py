@@ -475,13 +475,6 @@ Paso 6 - Prueba final en la máquina de refresco:
   * Si no se puede: necesitan técnico gestor de servicio
 
 REGLAS IMPORTANTES:
-- STICKERS: Usa los siguientes stickers en estos momentos exactos escribiendo la etiqueta correspondiente:
-  * [STICKER:empecemos] → cuando ya conoces el nombre del usuario, su familia y su unidad de negocio. IMPORTANTE: primero escribe el texto "¡Perfecto [nombre]! ¿En qué te puedo ayudar hoy?" y DESPUÉS pon [STICKER:empecemos]
-  * [STICKER:a_trabajar] → cuando inicias el diagnóstico paso a paso. IMPORTANTE: primero escribe el primer paso del diagnóstico y DESPUÉS pon [STICKER:a_trabajar]
-  * [STICKER:llave_palomita] → cuando el problema queda resuelto. IMPORTANTE: primero escribe el mensaje de felicitación y DESPUÉS pon [STICKER:llave_palomita]
-  * [STICKER:gracias] → cuando el usuario se despide. IMPORTANTE: primero escribe el mensaje de despedida y DESPUÉS pon [STICKER:gracias]
-  * [STICKER:saludo_militar] → cuando el usuario agradece tu ayuda. IMPORTANTE: primero escribe que estarás a la orden para futuras ocasiones y DESPUÉS pon [STICKER:saludo_militar]
-  Solo usa cada sticker una vez por conversación en el momento indicado.
 - ANÁLISIS DE IMÁGENES: El usuario puede enviarte fotos de los equipos o piezas. Cuando recibas una imagen, analízala en el contexto del problema de mantenimiento que están resolviendo. Describe lo que ves, indica si está en buen estado o tiene alguna falla visible, y orienta al usuario sobre qué hacer. Si no puedes determinar el estado con claridad, pídele que tome otra foto con mejor ángulo o iluminación.
 - MANTÉN EL CONTEXTO: Una vez identificado el tipo de problema (sensor L, problema eléctrico,
   despacho, etc.), no cambies de flujo aunque el usuario mencione palabras que normalmente
@@ -625,15 +618,6 @@ async def manejar_mensaje(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         respuesta_completa = response.content[0].text
 
-        # Eliminar stickers duplicados en la misma respuesta
-        import re as _re
-        stickers_en_respuesta = _re.findall(r'\[STICKER:[^\]]+\]', respuesta_completa)
-        vistos = set()
-        for sticker_tag in stickers_en_respuesta:
-            if sticker_tag in vistos:
-                respuesta_completa = respuesta_completa.replace(sticker_tag, '', 1)
-            else:
-                vistos.add(sticker_tag)
 
         # Agregar respuesta al historial
         conversaciones[user_id].append({
@@ -691,6 +675,49 @@ async def detectar_y_enviar_sticker(update: Update, context: ContextTypes.DEFAUL
     elif any(p in texto_lower for p in ["hasta luego", "que tengas", "cuídate", "cuidate", "nos vemos", "adiós", "adios", "bye", "chao"]):
         await enviar_sticker(update, context, "gracias")
 
+
+
+async def enviar_sticker_contextual(update, context, respuesta, user_id):
+    """Detecta el momento de la conversación y envía el sticker adecuado una sola vez"""
+    if user_id not in stickers_enviados:
+        stickers_enviados[user_id] = set()
+
+    respuesta_lower = respuesta.lower()
+
+    # Empecemos: cuando pregunta en qué puede ayudar (ya sabe nombre/familia/estación)
+    if "empecemos" not in stickers_enviados[user_id]:
+        if any(p in respuesta_lower for p in ["en qué te puedo ayudar", "en que te puedo ayudar", "cómo te puedo ayudar", "como te puedo ayudar", "cuéntame tu problema", "cuéntame en qué"]):
+            await context.bot.send_sticker(chat_id=update.effective_chat.id, sticker=STICKERS["empecemos"])
+            stickers_enviados[user_id].add("empecemos")
+            return
+
+    # A trabajar: cuando inicia el diagnóstico (paso 1, primero verifica, etc.)
+    if "a_trabajar" not in stickers_enviados[user_id] and "empecemos" in stickers_enviados[user_id]:
+        if any(p in respuesta_lower for p in ["paso 1", "primero verifica", "vamos a revisar", "sigamos estos pasos", "empecemos revisando"]):
+            await context.bot.send_sticker(chat_id=update.effective_chat.id, sticker=STICKERS["a_trabajar"])
+            stickers_enviados[user_id].add("a_trabajar")
+            return
+
+    # Llave palomita: cuando se resuelve
+    if "llave_palomita" not in stickers_enviados[user_id]:
+        if any(p in respuesta_lower for p in ["problema resuelto", "¡resuelto!", "excelente", "perfecto, ya quedó", "ya funciona", "genial", "¡listo!"]):
+            await context.bot.send_sticker(chat_id=update.effective_chat.id, sticker=STICKERS["llave_palomita"])
+            stickers_enviados[user_id].add("llave_palomita")
+            return
+
+    # Saludo militar: cuando el usuario agradece
+    if "saludo_militar" not in stickers_enviados[user_id]:
+        if any(p in respuesta_lower for p in ["a la orden", "aquí estaré", "cuando lo necesites", "para servirte", "estoy a tus órdenes"]):
+            await context.bot.send_sticker(chat_id=update.effective_chat.id, sticker=STICKERS["saludo_militar"])
+            stickers_enviados[user_id].add("saludo_militar")
+            return
+
+    # Gracias: al despedirse
+    if "gracias" not in stickers_enviados[user_id]:
+        if any(p in respuesta_lower for p in ["hasta luego", "cuídate", "que tengas", "nos vemos", "buen día", "buenas noches", "buenas tardes"]):
+            await context.bot.send_sticker(chat_id=update.effective_chat.id, sticker=STICKERS["gracias"])
+            stickers_enviados[user_id].add("gracias")
+            return
 
 async def procesar_y_enviar(update: Update, context: ContextTypes.DEFAULT_TYPE, texto: str):
     """Procesa el texto y envía imágenes/videos cuando se indique"""
