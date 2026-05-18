@@ -625,6 +625,16 @@ async def manejar_mensaje(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         respuesta_completa = response.content[0].text
 
+        # Eliminar stickers duplicados en la misma respuesta
+        import re as _re
+        stickers_en_respuesta = _re.findall(r'\[STICKER:[^\]]+\]', respuesta_completa)
+        vistos = set()
+        for sticker_tag in stickers_en_respuesta:
+            if sticker_tag in vistos:
+                respuesta_completa = respuesta_completa.replace(sticker_tag, '', 1)
+            else:
+                vistos.add(sticker_tag)
+
         # Agregar respuesta al historial
         conversaciones[user_id].append({
             "role": "assistant",
