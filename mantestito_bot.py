@@ -579,7 +579,7 @@ async def manejar_foto(update: Update, context: ContextTypes.DEFAULT_TYPE):
         nombre_usuario = nombres_usuarios.get(user_id, nombre_telegram)
         guardar_conversacion(sheet, nombre_usuario, user_id, f"[FOTO] {caption}", respuesta_completa)
 
-        await procesar_y_enviar(update, context, respuesta_completa)
+        await procesar_y_enviar(update, context, respuesta_completa, user_id)
 
     except Exception as e:
         logger.error(f"Error procesando foto: {e}")
@@ -630,7 +630,7 @@ async def manejar_mensaje(update: Update, context: ContextTypes.DEFAULT_TYPE):
         guardar_conversacion(sheet, nombre_usuario, user_id, mensaje, respuesta_completa)
 
         # Procesar la respuesta para detectar imágenes y videos
-        await procesar_y_enviar(update, context, respuesta_completa)
+        await procesar_y_enviar(update, context, respuesta_completa, user_id)
 
     except Exception as e:
         logger.error(f"Error al llamar a Claude: {e}")
@@ -639,92 +639,65 @@ async def manejar_mensaje(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
 
 
-async def enviar_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE, nombre: str):
-    """Envía un sticker de Mantestito"""
-    try:
-        if nombre in STICKERS:
-            await context.bot.send_sticker(
-                chat_id=update.effective_chat.id,
-                sticker=STICKERS[nombre]
-            )
-    except Exception as e:
-        logger.error(f"Error enviando sticker {nombre}: {e}")
-
-
-async def detectar_y_enviar_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE, texto: str):
-    """Detecta el momento de la conversación y envía el sticker correspondiente"""
-    texto_lower = texto.lower()
-
-    # Empecemos: cuando ya conoce nombre, familia y estacion e inicia atencion
-    if any(p in texto_lower for p in ["empecemos", "en qué te puedo ayudar", "en que te puedo ayudar", "cuéntame", "cuentame"]):
-        await enviar_sticker(update, context, "empecemos")
-
-    # A trabajar: cuando inicia el diagnostico paso a paso
-    elif any(p in texto_lower for p in ["paso 1", "paso 2", "vamos a revisar", "sigamos", "empecemos a revisar", "primero verifica", "primero revisa"]):
-        await enviar_sticker(update, context, "a_trabajar")
-
-    # Llave palomita: cuando el problema queda resuelto
-    elif any(p in texto_lower for p in ["resuelto", "problema resuelto", "listo", "funcionando", "está listo", "ya quedó", "ya quedo", "¡excelente", "excelente trabajo"]):
-        await enviar_sticker(update, context, "llave_palomita")
-
-    # Saludo militar: cuando el usuario agradece y Mantestito responde que estara a la orden
-    elif any(p in texto_lower for p in ["a la orden", "estaré aquí", "estare aqui", "para futuras", "cuando me necesites", "seguiré aquí"]):
-        await enviar_sticker(update, context, "saludo_militar")
-
-    # Gracias: cuando el usuario se despide
-    elif any(p in texto_lower for p in ["hasta luego", "que tengas", "cuídate", "cuidate", "nos vemos", "adiós", "adios", "bye", "chao"]):
-        await enviar_sticker(update, context, "gracias")
-
-
-
 async def enviar_sticker_contextual(update, context, respuesta, user_id):
-    """Detecta el momento de la conversación y envía el sticker adecuado una sola vez"""
+    """Detecta el momento de la conversación y envía el sticker adecuado"""
     if user_id not in stickers_enviados:
         stickers_enviados[user_id] = set()
 
     respuesta_lower = respuesta.lower()
 
-    # Empecemos: cuando pregunta en qué puede ayudar (ya sabe nombre/familia/estación)
+    # Resetear stickers de diagnóstico si el usuario inicia un nuevo problema
+    frases_nuevo_problema = [
+        "tengo otro problema", "ahora necesito", "otra consulta", "otra pregunta",
+        "tengo una nueva", "hay otro problema", "tengo otro tema", "algo más",
+        "también tengo", "otro inconveniente"
+    ]
+    # Detectar si el bot está preguntando por un nuevo problema tras resolver uno
+    if any(p in respuesta_lower for p in ["¿tienes algún otro problema", "¿hay algo más en que", "¿en qué más te puedo", "¿necesitas ayuda con algo más"]):
+        stickers_enviados[user_id].discard("a_trabajar")
+        stickers_enviados[user_id].discard("llave_palomita")
+        stickers_enviados[user_id].discard("saludo_militar")
+
+    # Empecemos: cuando pregunta en qué puede ayudar (solo una vez por conversación)
     if "empecemos" not in stickers_enviados[user_id]:
         if any(p in respuesta_lower for p in ["en qué te puedo ayudar", "en que te puedo ayudar", "cómo te puedo ayudar", "como te puedo ayudar", "cuéntame tu problema", "cuéntame en qué"]):
             await context.bot.send_sticker(chat_id=update.effective_chat.id, sticker=STICKERS["empecemos"])
             stickers_enviados[user_id].add("empecemos")
             return
 
-    # A trabajar: cuando inicia el diagnóstico (paso 1, primero verifica, etc.)
+    # A trabajar: cuando inicia el diagnóstico - se puede repetir por problema
     if "a_trabajar" not in stickers_enviados[user_id] and "empecemos" in stickers_enviados[user_id]:
         if any(p in respuesta_lower for p in ["paso 1", "primero verifica", "vamos a revisar", "sigamos estos pasos", "empecemos revisando"]):
             await context.bot.send_sticker(chat_id=update.effective_chat.id, sticker=STICKERS["a_trabajar"])
             stickers_enviados[user_id].add("a_trabajar")
             return
 
-    # Llave palomita: cuando se resuelve
+    # Llave palomita: cuando se resuelve - se puede repetir por problema
     if "llave_palomita" not in stickers_enviados[user_id]:
         if any(p in respuesta_lower for p in ["problema resuelto", "¡resuelto!", "excelente", "perfecto, ya quedó", "ya funciona", "genial", "¡listo!"]):
             await context.bot.send_sticker(chat_id=update.effective_chat.id, sticker=STICKERS["llave_palomita"])
             stickers_enviados[user_id].add("llave_palomita")
             return
 
-    # Saludo militar: cuando el usuario agradece
+    # Saludo militar: cuando agradece - se puede repetir por problema
     if "saludo_militar" not in stickers_enviados[user_id]:
         if any(p in respuesta_lower for p in ["a la orden", "aquí estaré", "cuando lo necesites", "para servirte", "estoy a tus órdenes"]):
             await context.bot.send_sticker(chat_id=update.effective_chat.id, sticker=STICKERS["saludo_militar"])
             stickers_enviados[user_id].add("saludo_militar")
             return
 
-    # Gracias: al despedirse
+    # Gracias: al despedirse (solo una vez por conversación)
     if "gracias" not in stickers_enviados[user_id]:
         if any(p in respuesta_lower for p in ["hasta luego", "cuídate", "que tengas", "nos vemos", "buen día", "buenas noches", "buenas tardes"]):
             await context.bot.send_sticker(chat_id=update.effective_chat.id, sticker=STICKERS["gracias"])
             stickers_enviados[user_id].add("gracias")
             return
 
-async def procesar_y_enviar(update: Update, context: ContextTypes.DEFAULT_TYPE, texto: str):
+async def procesar_y_enviar(update: Update, context: ContextTypes.DEFAULT_TYPE, texto: str, user_id: int = None):
     """Procesa el texto y envía imágenes/videos cuando se indique"""
     import re
 
     # Detectar momento y enviar sticker correspondiente
-    await detectar_y_enviar_sticker(update, context, texto)
 
     # Dividir el texto en partes: texto normal e instrucciones de imagen/video
     partes = re.split(r'(\[IMAGEN:[^\]]+\]|\[VIDEO:[^\]]+\]|\[STICKER:[^\]]+\])', texto)
@@ -790,6 +763,9 @@ async def procesar_y_enviar(update: Update, context: ContextTypes.DEFAULT_TYPE, 
             # Enviar texto normal
             if parte:
                 await update.message.reply_text(parte)
+
+    # Enviar sticker contextual una sola vez al final de procesar toda la respuesta
+    if user_id is not None:
 
 
 async def reset(update: Update, context: ContextTypes.DEFAULT_TYPE):
