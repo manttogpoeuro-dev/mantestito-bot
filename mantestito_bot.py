@@ -507,6 +507,7 @@ REGLAS IMPORTANTES:
 # Almacena el historial de conversaciones por usuario
 conversaciones = {}
 nombres_usuarios = {}
+stickers_enviados = {}  # Rastrea stickers ya enviados por usuario
 
 client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 sheet = init_google_sheets()
@@ -516,6 +517,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Comando /start"""
     user_id = update.effective_user.id
     conversaciones[user_id] = []
+    stickers_enviados[user_id] = set()
     await update.message.reply_text(
         "¡Hola! 👋 Soy Mantestito, tu asistente de mantenimiento 🧰\n"
         "Estoy aquí para ayudarte a resolver problemas comunes de manera rápida.\n\n"
@@ -688,7 +690,7 @@ async def procesar_y_enviar(update: Update, context: ContextTypes.DEFAULT_TYPE, 
     await detectar_y_enviar_sticker(update, context, texto)
 
     # Dividir el texto en partes: texto normal e instrucciones de imagen/video
-    partes = re.split(r'(\[IMAGEN:[^\]]+\]|\[VIDEO:[^\]]+\])', texto)
+    partes = re.split(r'(\[IMAGEN:[^\]]+\]|\[VIDEO:[^\]]+\]|\[STICKER:[^\]]+\])', texto)
 
     for parte in partes:
         parte = parte.strip()
@@ -716,13 +718,19 @@ async def procesar_y_enviar(update: Update, context: ContextTypes.DEFAULT_TYPE, 
             # Extraer nombre del sticker
             nombre = parte[9:-1].strip()
             if nombre in STICKERS:
-                try:
-                    await context.bot.send_sticker(
-                        chat_id=update.effective_chat.id,
-                        sticker=STICKERS[nombre]
-                    )
-                except Exception as e:
-                    logger.error(f"Error enviando sticker {nombre}: {e}")
+                # Verificar si este sticker ya fue enviado en esta conversación
+                user_id = update.effective_user.id
+                if user_id not in stickers_enviados:
+                    stickers_enviados[user_id] = set()
+                if nombre not in stickers_enviados[user_id]:
+                    try:
+                        await context.bot.send_sticker(
+                            chat_id=update.effective_chat.id,
+                            sticker=STICKERS[nombre]
+                        )
+                        stickers_enviados[user_id].add(nombre)
+                    except Exception as e:
+                        logger.error(f"Error enviando sticker {nombre}: {e}")
 
         elif parte.startswith('[VIDEO:'):
             # Extraer nombre de video
@@ -751,6 +759,7 @@ async def reset(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Comando /reset para reiniciar la conversación"""
     user_id = update.effective_user.id
     conversaciones[user_id] = []
+    stickers_enviados[user_id] = set()
     await update.message.reply_text(
         "¡Conversación reiniciada! 🔄\n"
         "Hola de nuevo, soy Mantestito 🧰 ¿En qué puedo ayudarte?"
