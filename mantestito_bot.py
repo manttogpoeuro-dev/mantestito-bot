@@ -759,6 +759,7 @@ async def procesar_y_enviar(update: Update, context: ContextTypes.DEFAULT_TYPE, 
 
     # Enviar sticker contextual una sola vez al final de procesar toda la respuesta
     if user_id is not None:
+        await enviar_sticker_contextual(update, context, texto, user_id)
 
 
 async def reset(update: Update, context: ContextTypes.DEFAULT_TYPE):
