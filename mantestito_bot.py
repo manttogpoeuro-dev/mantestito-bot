@@ -658,15 +658,8 @@ async def enviar_sticker_contextual(update, context, respuesta, user_id):
         stickers_enviados[user_id].discard("llave_palomita")
         stickers_enviados[user_id].discard("saludo_militar")
 
-    # Empecemos: cuando pregunta en qué puede ayudar (solo una vez por conversación)
-    if "empecemos" not in stickers_enviados[user_id]:
-        if any(p in respuesta_lower for p in ["en qué te puedo ayudar", "en que te puedo ayudar", "cómo te puedo ayudar", "como te puedo ayudar", "cuéntame tu problema", "cuéntame en qué"]):
-            await context.bot.send_sticker(chat_id=update.effective_chat.id, sticker=STICKERS["empecemos"])
-            stickers_enviados[user_id].add("empecemos")
-            return
-
-    # A trabajar: cuando inicia el diagnóstico - se puede repetir por problema
-    if "a_trabajar" not in stickers_enviados[user_id] and "empecemos" in stickers_enviados[user_id]:
+    # A trabajar: solo al inicio del diagnóstico, una vez por problema
+    if "a_trabajar" not in stickers_enviados[user_id]:
         if any(p in respuesta_lower for p in ["paso 1", "primero verifica", "vamos a revisar", "sigamos estos pasos", "empecemos revisando"]):
             await context.bot.send_sticker(chat_id=update.effective_chat.id, sticker=STICKERS["a_trabajar"])
             stickers_enviados[user_id].add("a_trabajar")
