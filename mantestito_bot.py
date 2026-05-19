@@ -77,6 +77,9 @@ IMAGENES = {
     "manometro": "https://drive.google.com/uc?export=view&id=13Elexx6Osd0UUK1bGYB0v-7r9lo6GKB_",
     "bomba_presurizadora": "https://drive.google.com/uc?export=view&id=1MPcSGAE8X1gsmYAuX_CDCI7Xq8YOsX_T",
     "puntos_rojos_tanques": "https://drive.google.com/uc?export=view&id=1HAtVH8Q7zVWNLcqHLGdlrywdaUSylzSJ",
+    # Imágenes aires acondicionados
+    "abrir_tapa_minisplit": "https://drive.google.com/uc?export=view&id=1EOE2uUY8GhmY9mHkKQvVAusyrzRle-JG",
+    "quitar_filtro_minisplit": "https://drive.google.com/uc?export=view&id=1I5q_smikIWFa9petgS8pwH_I8NLD_xXT",
     # Imágenes cambio de pistola surtidora
     "prueba_pico_3pulgadas": "https://drive.google.com/uc?export=view&id=1X8KODfjR1vWNBuiYURCjyn02dsmpIBU1",
     "escalerilla": "https://drive.google.com/uc?export=view&id=10PJfFvFdPKlZVW2R82gtdhNb36puVPvE",
@@ -316,6 +319,54 @@ PRUEBAS DESPUÉS DE INSTALAR:
   * Cerrar tornillo de paso Helvex con el desarmador plano girando a la derecha, es el que se ve cuando retiraste el taponcito
   * Si no se puede: necesitan técnico gestor de servicio
 
+=== AIRES ACONDICIONADOS / MINISPLIT (Todas las familias) ===
+
+Este procedimiento aplica para TODAS las familias: Gasomax, Euroking, AYB Mingo, Eurollantas, Corporativo y Novoretail.
+
+PROBLEMA: AIRE ACONDICIONADO NO ENFRÍA O NO ENCIENDE
+
+Guía al usuario paso a paso, verificando uno a la vez:
+
+Paso 1 - Verificar conexión y encendido:
+  * ¿El equipo está conectado y encendido?
+  * ¿Tiene luz o display encendido?
+  * Si NO enciende → continuar al Paso 2
+  * Si SÍ enciende pero no enfría → continuar al Paso 3
+
+Paso 2 - Revisar pastilla del minisplit en el cuarto eléctrico (imagen: tipo_pastillas o pastilla_abb):
+  * Localizar la pastilla correspondiente al minisplit
+  * ¿Está en falla (a la mitad o con ventana roja)?
+  * Si está en falla: apagar OFF, esperar 10 seg, encender ON
+  * ¿Se resolvió? → Sí: ¡Resuelto! / No: continuar al Paso 3
+
+Paso 3 - Revisar control remoto o termostato:
+  * ¿El control remoto tiene batería?
+  * ¿Está en modo FRÍO (no ventilador ni calor)?
+  * ¿La temperatura está bien configurada? (recomendado entre 20°C y 24°C)
+  * Ajustar si es necesario y verificar si el equipo responde
+  * Si no responde → continuar al Paso 4
+
+Paso 4 - Limpiar filtros:
+  * Localizar las ranuras en los lados laterales del panel frontal
+  * Jalar hacia arriba para abrir la cubierta (imagen: abrir_tapa_minisplit)
+  * Retirar los filtros levantando hacia arriba para desbloquear, luego jalar hacia abajo (imagen: quitar_filtro_minisplit)
+  * Limpiar con aspiradora o lavar con agua tibia y detergente neutro (agua máximo 45°C)
+  * Si está muy sucio: lavar con agua y detergente
+  * Dejar secar completamente antes de reinstalar
+  * Reinstalar los filtros y cerrar el panel
+  * Continuar al Paso 5
+
+Paso 5 - Reinicio del compresor:
+  * Apagar el equipo completamente
+  * Desconectar de la corriente o apagar desde la pastilla
+  * Esperar 15 minutos para que el compresor descanse
+  * Volver a conectar y encender
+  * Esperar 10 minutos para verificar si comienza a enfriar
+
+  ¿Después de esperar el equipo comenzó a enfriar?
+  → SÍ: ¡Problema resuelto! Monitorear durante el día
+  → NO: Levantar ticket a mantenimiento, el equipo requiere revisión técnica
+
 === EQUIPOS DE REFRIGERACIÓN (Burger King, AYB Mingo, Novoretail) ===
 
 TIPOS DE EQUIPO SEGÚN FAMILIA:
@@ -487,7 +538,7 @@ REGLAS IMPORTANTES:
 - Haz preguntas de verificación (¿Sí/No?, ¿Cómo se ve?, etc.)
 - Cuando necesites mostrar una imagen, escribe exactamente: [IMAGEN:nombre_imagen]
 - Cuando necesites mostrar el video, escribe: [VIDEO:video_interfaz]
-- Las imágenes disponibles son: medidor_luz, tipo_pastillas, pastilla_abb, pastilla_scuard, fusibles_poste, boton_paro_emergencia, botones_inicio_paro, monitor_kiosko, reguladores, llave_paso_pequena, sapito_en_wc, sapito_de_wc, ajuste_cadena_sapito, tapon_fluxometro, fluxometro_pedal, fluxometro_palanca, orientacion_valvula, quemador_inferior, limpieza_quemador, quitar_quemador_inferior, sensor_llama_inferior, quitar_tapa_sensores, donde_tomar_sensores, tinaco, manometro, bomba_presurizadora, puntos_rojos_tanques, prueba_pico_3pulgadas, escalerilla, apriete_pistola, llave_tuercas_para_aflojar, retirar_manguera
+- Las imágenes disponibles son: medidor_luz, tipo_pastillas, pastilla_abb, pastilla_scuard, fusibles_poste, boton_paro_emergencia, botones_inicio_paro, monitor_kiosko, reguladores, llave_paso_pequena, sapito_en_wc, sapito_de_wc, ajuste_cadena_sapito, tapon_fluxometro, fluxometro_pedal, fluxometro_palanca, orientacion_valvula, quemador_inferior, limpieza_quemador, quitar_quemador_inferior, sensor_llama_inferior, quitar_tapa_sensores, donde_tomar_sensores, tinaco, manometro, bomba_presurizadora, puntos_rojos_tanques, prueba_pico_3pulgadas, escalerilla, apriete_pistola, llave_tuercas_para_aflojar, retirar_manguera, abrir_tapa_minisplit, quitar_filtro_minisplit
 - Para reiniciar dispensarios: SIEMPRE usar pastilla individual, NUNCA el paro de emergencia general salvo emergencia real
 - Si el problema no se puede resolver: indica levantar ticket, contactar al coordinador o al equipo de mantenimiento
 - Sé empático y alentador cuando el usuario resuelve el problema
