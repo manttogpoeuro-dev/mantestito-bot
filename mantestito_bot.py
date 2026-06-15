@@ -7,6 +7,7 @@ from google.oauth2.service_account import Credentials
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 import anthropic
+import requests
 
 # ============================================================
 # CONFIGURACION
@@ -14,6 +15,15 @@ import anthropic
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY")
 GOOGLE_SHEET_ID = "10lI_HXAQbLyxh8rDMzAkdb4RSopI31EiR_m_NJkIsEI"
+FRESHDESK_API_KEY = os.environ.get("FRESHDESK_API_KEY")
+FRESHDESK_DOMAIN = os.environ.get("FRESHDESK_DOMAIN")
+FRESHDESK_GROUP_IDS = {
+    "AYB Mingo": 154000227835,
+    "Corporativo": 154000228071,
+    "Euroking": 154000228066,
+    "Eurollantas": 154000227857,
+    "Novoretail": 154000227836,
+}
 # ============================================================
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -106,6 +116,174 @@ STICKERS = {
     "gracias": "CAACAgEAAxkBAAIJcmoLJbcGv-50L0Vxm95H9uwg_nBLAAI-BwACweNRRFl740NNdtzfOwQ",
     "saludo_militar": "CAACAgEAAxkBAAIJhGoLLI37pagpPVjUTPGrmreVmi1IAAJBBwACtJJRRKSnj8jy3AJ7OwQ",
 }
+
+
+# ============================================================
+# DATOS PARA INTEGRACIÓN CON FRESHDESK
+# ============================================================
+
+# Mapeo de unidades de negocio -> correo del gerente (requester del ticket)
+UNIDADES_NEGOCIO = {
+    "Corporativo": [
+        ("Asistente Direccion", "asistentedireccion@grupoeuro.com.mx"),
+        ("Gerente Sistemas", "gerente.sistemas@grupoeuro.com.mx"),
+        ("Sanjuana Bautista", "coordinador.mantenimiento@grupoeuro.com.mx"),
+        ("Seguridad e Higiene", "seguridadehigiene@grupoeuro.com.mx"),
+    ],
+    "Eurollantas": [
+        ("Asistente Compras", "asistente.logistica@eurollantas.com.mx"),
+        ("Erik García Rico", "gerencia.honda@motosdsanluis.mx"),
+        ("Eurollantas Carranza", "gerencia.carranza@eurollantas.com.mx"),
+        ("Eurollantas Zacatecas", "ventas.zacatecas@eurollantas.com.mx"),
+        ("Eurollantas Muñoz", "gerencia.munoz@eurollantas.com.mx"),
+        ("Eurollantas Glorieta", "gerencia.glorieta@eurollantas.com.mx"),
+        ("Gerente Logistica", "gerente.logistica@eurollantas.com.mx"),
+        ("Gerente Honda", "motosdsanluis@grupoeuro.com.mx"),
+        ("Honda", "administracion@motosdsanluis.mx"),
+        ("Importadora", "facturacion@importadoraeuro.com"),
+    ],
+    "Euroking": [
+        ("BK ARAGON", "gerente.bkplazaaragon@grupoeuro.com.mx"),
+        ("BK ATLIXCO", "gerente.bkatlixco@grupoeuro.com.mx"),
+        ("BK PERINORTE", "gerente.bkgaleriasperinorte@grupoeuro.com.mx"),
+        ("BK GALERIAS CUERNAVACA", "gerente.bkgaleriascuernavaca@grupoeuro.com.mx"),
+        ("BK GALERIAS SERDAN", "gerente.bkgaleriasserdan@grupoeuro.com.mx"),
+        ("BK GALERIAS ATIZAPAN", "gerente.bkatizapan@grupoeuro.com.mx"),
+        ("BK GALERIAS TOLUCA", "gerente.bkgaleriastolloacan@grupoeuro.com.mx"),
+        ("BK PATIO TOLUCA", "gerente.bkpatio@grupoeuro.com.mx"),
+        ("BK PLAZA PLATINO", "gerente.bkplazaplatino@grupoeuro.com.mx"),
+        ("BK PLAZA FORUM CUERNAVACA", "gerente.bkforum@grupoeuro.com.mx"),
+        ("BK PUEBLA CENTRO", "gerente.bkcentropuebla@grupoeuro.com.mx"),
+        ("BK SANTA FE", "gerente.bksantafe@grupoeuro.com.mx"),
+        ("BK SANTIAGO TIANGUISTENGO", "gerente.bktianguistenco@grupoeuro.com.mx"),
+        ("BK TOLUCA SENDERO", "gerente.bksenderofs@grupoeuro.com.mx"),
+        ("BK TOLUCA I PLAZA LAS AMERICAS", "gerente.bkplazaamericas@grupoeuro.com.mx"),
+        ("BK CUERNAVACA PLAN DE AYALA", "gerente.bkplandeayala@grupoeuro.com.mx"),
+        ("BK TOLUCA II GALERIAS METEPEC", "gerente.bkgaleriasmetepec@grupoeuro.com.mx"),
+        ("BK TOLUCA IV ALFREDO DEL MAZO", "gerente.bkalfredo@grupoeuro.com.mx"),
+        ("BK TOLUCA SENDERO 2", "gerente.bksenderofc@grupoeuro.com.mx"),
+        ("Burger King Pocaluz", "gerente.bkmatehuala1@grupoeuro.com.mx"),
+        ("Burger King Citadella", "gerentebk.citadela@grupoeuro.com.mx"),
+        ("Burger King Aerogas", "gerente.bkaerogas@grupoeuro.com.mx"),
+        ("Burger King Tecnologico", "gerente.bktecnologico@grupoeuro.com.mx"),
+        ("Burger King Citadina", "gerente.bkcitadina@grupoeuro.com.mx"),
+        ("Burger King San Juan", "gerente.bkgaleriassanjuan@grupoeuro.com.mx"),
+        ("Burger King del parque", "bkingplazadelparque@grupoeuro.com.mx"),
+        ("Burguer King Santa Maria", "bkingstamaria@grupoeuro.com.mx"),
+    ],
+    "Novoretail": [
+        ("Club KM Pocaluz", "gerente.ckpocaluz@grupoeuro.com.mx"),
+        ("Club KM Hacienda 14", "gerente.ckh14@grupoeuro.com.mx"),
+        ("Club Kilometro Hacienda", "regaderas.hacienda@grupoeuro.com.mx"),
+        ("Club Kilometros Europits", "gerente.ckeuropits@grupoeuro.com.mx"),
+        ("Distrital Novo Region Norte", "gerente.distritalnorte@grupoeuro.com.mx"),
+        ("Gerente distrital Matehuala", "gerentedist.matehuala@grupoeuro.com.mx"),
+        ("Max Store Hacienda", "gerente.maxsta2@grupoeuro.com.mx"),
+        ("Max Store Europits", "gerente.maxeuropits@grupoeuro.com.mx"),
+        ("Max Store Aerogas", "gerente.maxaerogas@grupoeuro.com.mx"),
+        ("Max Store Eurogas", "gerente.maxeurogas@grupoeuro.com.mx"),
+        ("Max Store La Carreta", "max.lacarreta@grupoeuro.com.mx"),
+        ("Max Store Santa Maria", "gerente.maxsta1@grupoeuro.com.mx"),
+        ("Patio Troje Santa Maria", "gerente.latroje@grupoeuro.com.mx"),
+        ("Super All", "gerente.superall@grupoeuro.com.mx"),
+    ],
+    "AYB Mingo": [
+        ("Hogazza", "gerente.hogazza@grupoeuro.com.mx"),
+        ("Hojaldre", "gerente.hojaldre@grupoeuro.com.mx"),
+        ("MINGO Carranza", "mingo@grupoeuro.com.mx"),
+        ("MINGO Dorado", "italian.dorado@grupoeuro.com.mx"),
+        ("MINGO Citadina", "gerenteic.citadina@grupoeuro.com.mx"),
+        ("MINGO Aerogas", "fact.italiancoffee.aerogas@grupoeuro.com.mx"),
+        ("MINGO Eurogas", "fact.italian.eurogas@grupoeuro.com.mx"),
+        ("MINGO La Hacienda", "fact.italiancoffee.santamaria2@grupoeuro.com.mx"),
+        ("MINGO Santa Maria", "italianc.santamaria@grupoeuro.com.mx"),
+        ("SUBWAY", "gerencia.subway1@grupoeuro.com.mx"),
+        ("The Italian Coffee Europits", "italiancoffee.europits@grupoeuro.com.mx"),
+        ("The Italian Coffee Sendero", "italiancoffeeslp@grupoeuro.com.mx"),
+    ],
+}
+
+# Opciones del campo "Type" (Equipo/Instalación) - solo aplica para Euroking
+EQUIPO_TYPES_EUROKING = [
+    "PHU", "Aire acondicionado", "Calentador", "Sistema filtrado (agua purificada)",
+    "Cuna de papa", "Trampas de grasas", "Hornos", "Tostadores", "Maquina hielos",
+    "Hidroneumatico", "Wc mingitorios", "Broiler", "Freidoras", "Taylor", "Camaras",
+    "Portatiles", "Extraccion", "Desazolve (drenaje)", "Luminarias", "Area de juegos",
+    "Extractor de baños", "Electricidad", "Secadores baños", "Fluxometros", "Tarjas",
+    "Tableros Electricos", "Mezcladoras", "Chapas", "Contactos Electricos", "Lavamanos",
+    "Candados", "Anuncios luminosos", "Edificio", "Cortinas", "Espectaculares", "Mesas sillas",
+    "Pintura", "Plafones",
+]
+
+# Prioridades disponibles para familias distintas a Euroking
+PRIORIDADES_FRESHDESK = {
+    "urgente": 4,
+    "alta": 3,
+    "media": 2,
+    "baja": 1,
+}
+
+
+def buscar_correo_unidad(familia, unidad_negocio):
+    """Busca el correo del gerente según familia y unidad de negocio (texto libre).
+    Devuelve (nombre_oficial, correo) o (None, None) si no encuentra coincidencia razonable."""
+    if familia not in UNIDADES_NEGOCIO:
+        return None, None
+
+    unidad_lower = unidad_negocio.lower().strip()
+    candidatos = UNIDADES_NEGOCIO[familia]
+
+    # Coincidencia exacta primero
+    for nombre, correo in candidatos:
+        if nombre.lower() == unidad_lower:
+            return nombre, correo
+
+    # Coincidencia parcial (contiene)
+    for nombre, correo in candidatos:
+        if unidad_lower in nombre.lower() or nombre.lower() in unidad_lower:
+            return nombre, correo
+
+    return None, None
+
+
+def crear_ticket_freshdesk(email_solicitante, familia, unidad_negocio, asunto, descripcion, prioridad=None, equipo_type=None):
+    """Crea un ticket en Freshdesk vía API. Devuelve (exito, id_ticket_o_error)"""
+    if not FRESHDESK_API_KEY or not FRESHDESK_DOMAIN:
+        logger.error("Freshdesk no configurado (falta API key o domain)")
+        return False, "Freshdesk no está configurado"
+
+    url = f"https://{FRESHDESK_DOMAIN}/api/v2/tickets"
+
+    payload = {
+        "email": email_solicitante,
+        "subject": asunto,
+        "description": descripcion,
+        "status": 2,  # Open
+    }
+
+    if familia in FRESHDESK_GROUP_IDS:
+        payload["group_id"] = FRESHDESK_GROUP_IDS[familia]
+
+    if familia == "Euroking" and equipo_type:
+        # Freshdesk asigna prioridad automáticamente según el Type/Equipo
+        payload["type"] = equipo_type
+    elif prioridad:
+        payload["priority"] = PRIORIDADES_FRESHDESK.get(prioridad.lower(), 2)
+    else:
+        payload["priority"] = 2  # Media por defecto
+
+    try:
+        response = requests.post(url, json=payload, auth=(FRESHDESK_API_KEY, "X"), timeout=15)
+        if response.status_code == 201:
+            ticket_data = response.json()
+            return True, ticket_data.get("id")
+        else:
+            logger.error(f"Error creando ticket Freshdesk: {response.status_code} - {response.text}")
+            return False, f"Error {response.status_code}"
+    except Exception as e:
+        logger.error(f"Excepción creando ticket Freshdesk: {e}")
+        return False, str(e)
+
 
 
 SYSTEM_PROMPT = """Eres Mantestito 🧰, un asistente experto en mantenimiento creado por el equipo de mantenimiento de Grupo Euro. Eres amigable, paciente y muy claro en tus instrucciones.
@@ -525,6 +703,43 @@ Paso 6 - Prueba final en la máquina de refresco:
   * Cerrar tornillo de paso Helvex con el desarmador plano girando a la derecha, es el que se ve cuando retiraste el taponcito
   * Si no se puede: necesitan técnico gestor de servicio
 
+
+LEVANTAMIENTO DE TICKETS AUTOMÁTICO (Euroking, Eurollantas, AYB Mingo, Novoretail, Corporativo):
+- Para estas 5 familias, Mantestito puede crear el ticket automáticamente, NO compartas el link de Freshdesk para estas familias.
+- Familia Gasomax: SIGUE igual que antes, NO se crea ticket automático, recomienda crear el ticket manualmente en https://region1.portalcsm.com/Main/Login
+
+CUANDO EL DIAGNÓSTICO NO SE PUEDA RESOLVER (familias distintas a Gasomax):
+1. Pregunta amablemente al usuario si desea que se levante un ticket
+2. Si acepta, muéstrale un resumen breve de lo que incluirá el ticket: unidad de negocio, descripción del problema, y lo que ya se intentó
+3. Pide confirmación explícita ("¿confirmas que levante el ticket con esta información?")
+4. Si el usuario confirma, responde con un mensaje breve de confirmación y agrega al FINAL de tu respuesta, en una línea separada, exactamente:
+   [CREAR_TICKET:familia|unidad_negocio|asunto|descripcion|prioridad_o_equipo]
+
+   Donde:
+   - familia: una de Euroking, Eurollantas, AYB Mingo, Novoretail, Corporativo (tal como las conoces)
+   - unidad_negocio: el nombre EXACTO de la lista de unidades de negocio de esa familia (ver abajo)
+   - asunto: título corto del problema (máx 80 caracteres)
+   - descripcion: resumen del problema y los pasos ya intentados
+   - prioridad_o_equipo:
+     * Si familia es Euroking: el nombre EXACTO del Equipo/Instalación de la lista de Type (ver abajo)
+     * Si familia NO es Euroking: una de estas palabras: urgente, alta, media, baja
+       - urgente: problemas que detienen la operación (eléctrico general, fuga de gas)
+       - alta: equipo importante inoperativo (cocina, refrigeración crítica)
+       - media: molesto pero no crítico (fuga de agua menor, aire acondicionado de confort)
+       - baja: temas estéticos (luminarias, pintura, etc.)
+
+UNIDADES DE NEGOCIO DISPONIBLES (usa el nombre EXACTO como aparece aquí):
+  * Corporativo: Asistente Direccion, Gerente Sistemas, Sanjuana Bautista, Seguridad e Higiene
+  * Eurollantas: Asistente Compras, Erik García Rico, Eurollantas Carranza, Eurollantas Zacatecas, Eurollantas Muñoz, Eurollantas Glorieta, Gerente Logistica, Gerente Honda, Honda, Importadora
+  * Euroking: BK ARAGON, BK ATLIXCO, BK PERINORTE, BK GALERIAS CUERNAVACA, BK GALERIAS SERDAN, BK GALERIAS ATIZAPAN, BK GALERIAS TOLUCA, BK PATIO TOLUCA, BK PLAZA PLATINO, BK PLAZA FORUM CUERNAVACA, BK PUEBLA CENTRO, BK SANTA FE, BK SANTIAGO TIANGUISTENGO, BK TOLUCA SENDERO, BK TOLUCA I PLAZA LAS AMERICAS, BK CUERNAVACA PLAN DE AYALA, BK TOLUCA II GALERIAS METEPEC, BK TOLUCA IV ALFREDO DEL MAZO, BK TOLUCA SENDERO 2, Burger King Pocaluz, Burger King Citadella, Burger King Aerogas, Burger King Tecnologico, Burger King Citadina, Burger King San Juan, Burger King del parque, Burguer King Santa Maria
+  * Novoretail: Club KM Pocaluz, Club KM Hacienda 14, Club Kilometro Hacienda, Club Kilometros Europits, Distrital Novo Region Norte, Gerente distrital Matehuala, Max Store Hacienda, Max Store Europits, Max Store Aerogas, Max Store Eurogas, Max Store La Carreta, Max Store Santa Maria, Patio Troje Santa Maria, Super All
+  * AYB Mingo: Hogazza, Hojaldre, MINGO Carranza, MINGO Dorado, MINGO Citadina, MINGO Aerogas, MINGO Eurogas, MINGO La Hacienda, MINGO Santa Maria, SUBWAY, The Italian Coffee Europits, The Italian Coffee Sendero
+
+EQUIPOS/INSTALACIONES DISPONIBLES PARA EUROKING (Type, usa el nombre EXACTO):
+PHU, Aire acondicionado, Calentador, Sistema filtrado (agua purificada), Cuna de papa, Trampas de grasas, Hornos, Tostadores, Maquina hielos, Hidroneumatico, Wc mingitorios, Broiler, Freidoras, Taylor, Camaras, Portatiles, Extraccion, Desazolve (drenaje), Luminarias, Area de juegos, Extractor de baños, Electricidad, Secadores baños, Fluxometros, Tarjas, Tableros Electricos, Mezcladoras, Chapas, Contactos Electricos, Lavamanos, Candados, Anuncios luminosos, Edificio, Cortinas, Espectaculares, Mesas sillas, Pintura, Plafones
+
+IMPORTANTE: la etiqueta [CREAR_TICKET:...] NUNCA debe mostrarse al usuario, va en una línea aparte al final y el código la procesa de forma invisible. Después de crear el ticket, el sistema te dará el número de ticket para que lo compartas con el usuario en tu siguiente respuesta.
+
 REGLAS IMPORTANTES:
 - ANÁLISIS DE IMÁGENES: El usuario puede enviarte fotos de los equipos o piezas. Cuando recibas una imagen, analízala en el contexto del problema de mantenimiento que están resolviendo. Describe lo que ves, indica si está en buen estado o tiene alguna falla visible, y orienta al usuario sobre qué hacer. Si no puedes determinar el estado con claridad, pídele que tome otra foto con mejor ángulo o iluminación.
 - MANTÉN EL CONTEXTO: Una vez identificado el tipo de problema (sensor L, problema eléctrico,
@@ -669,8 +884,10 @@ async def manejar_mensaje(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         respuesta_completa = response.content[0].text
 
+        # Procesar creación de ticket si Claude incluyó la etiqueta [CREAR_TICKET:...]
+        respuesta_completa, mensaje_ticket = await procesar_creacion_ticket(respuesta_completa)
 
-        # Agregar respuesta al historial
+        # Agregar respuesta al historial (sin la etiqueta, ya removida)
         conversaciones[user_id].append({
             "role": "assistant",
             "content": respuesta_completa
@@ -682,6 +899,14 @@ async def manejar_mensaje(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         # Procesar la respuesta para detectar imágenes y videos
         await procesar_y_enviar(update, context, respuesta_completa, user_id)
+
+        # Si se creó un ticket, enviar el resultado como mensaje adicional
+        if mensaje_ticket:
+            await update.message.reply_text(mensaje_ticket)
+            conversaciones[user_id].append({
+                "role": "assistant",
+                "content": mensaje_ticket
+            })
 
     except Exception as e:
         logger.error(f"Error al llamar a Claude: {e}")
@@ -736,6 +961,57 @@ async def enviar_sticker_contextual(update, context, respuesta, user_id):
             await context.bot.send_sticker(chat_id=update.effective_chat.id, sticker=STICKERS["gracias"])
             stickers_enviados[user_id].add("gracias")
             return
+
+
+async def procesar_creacion_ticket(respuesta_completa):
+    """Busca la etiqueta [CREAR_TICKET:...] en la respuesta, crea el ticket si existe,
+    y devuelve (texto_limpio, mensaje_resultado_ticket_o_None)"""
+    import re as _re
+    match = _re.search(r'\[CREAR_TICKET:([^\]]+)\]', respuesta_completa)
+    if not match:
+        return respuesta_completa, None
+
+    texto_limpio = respuesta_completa.replace(match.group(0), '').strip()
+
+    try:
+        partes = match.group(1).split('|')
+        if len(partes) != 5:
+            logger.error(f"Formato de CREAR_TICKET inválido: {match.group(1)}")
+            return texto_limpio, None
+
+        familia, unidad_negocio, asunto, descripcion, prioridad_o_equipo = [p.strip() for p in partes]
+
+        nombre_oficial, correo = buscar_correo_unidad(familia, unidad_negocio)
+        if not correo:
+            logger.error(f"No se encontró correo para familia={familia} unidad={unidad_negocio}")
+            return texto_limpio, "⚠️ No pude identificar la unidad de negocio para crear el ticket. Por favor levanta el ticket manualmente o contacta al coordinador de mantenimiento."
+
+        equipo_type = None
+        prioridad = None
+        if familia == "Euroking":
+            equipo_type = prioridad_o_equipo
+        else:
+            prioridad = prioridad_o_equipo
+
+        exito, resultado = crear_ticket_freshdesk(
+            email_solicitante=correo,
+            familia=familia,
+            unidad_negocio=nombre_oficial,
+            asunto=asunto,
+            descripcion=descripcion,
+            prioridad=prioridad,
+            equipo_type=equipo_type,
+        )
+
+        if exito:
+            return texto_limpio, f"✅ ¡Listo! Se creó el ticket #{resultado} para {nombre_oficial}. El equipo de mantenimiento ya fue notificado."
+        else:
+            return texto_limpio, f"⚠️ Hubo un problema creando el ticket automáticamente ({resultado}). Por favor contacta al coordinador de mantenimiento."
+
+    except Exception as e:
+        logger.error(f"Error procesando CREAR_TICKET: {e}")
+        return texto_limpio, "⚠️ Hubo un problema técnico creando el ticket. Por favor contacta al coordinador de mantenimiento."
+
 
 async def procesar_y_enviar(update: Update, context: ContextTypes.DEFAULT_TYPE, texto: str, user_id: int = None):
     """Procesa el texto y envía imágenes/videos cuando se indique"""
