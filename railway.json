@@ -1,6 +1,6 @@
 {
   "deploy": {
-    "startCommand": "python mantestito_bot.py",
+    "startCommand": "python get_freshdesk_fields.py",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }
