@@ -1,6 +1,6 @@
 {
   "deploy": {
-    "startCommand": "python get_freshdesk_fields.py",
+    "startCommand": "python get_freshdesk_contacts.py",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }
