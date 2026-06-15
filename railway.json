@@ -1,6 +1,6 @@
 {
   "deploy": {
-    "startCommand": "python get_freshdesk_contacts.py",
+    "startCommand": "python mantestito_bot.py",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }
