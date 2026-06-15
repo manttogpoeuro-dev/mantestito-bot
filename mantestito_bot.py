@@ -243,37 +243,47 @@ def buscar_correo_unidad(familia, unidad_negocio):
         if unidad_lower in nombre.lower() or nombre.lower() in unidad_lower:
             return nombre, correo
 
+    # Fallback para Corporativo: si no se encontró coincidencia, usar Asistente Dirección
+    if familia == "Corporativo":
+        return "Asistente Direccion", "asistentedireccion@grupoeuro.com.mx"
+
     return None, None
 
 
-def crear_ticket_freshdesk(email_solicitante, familia, unidad_negocio, asunto, descripcion, prioridad=None, equipo_type=None):
-    """Crea un ticket en Freshdesk vía API. Devuelve (exito, id_ticket_o_error)"""
+def crear_ticket_freshdesk(email_solicitante, familia, unidad_negocio, asunto, descripcion, prioridad=None, equipo_type=None, foto_bytes=None):
+    """Crea un ticket en Freshdesk vía API. Devuelve (exito, id_ticket_o_error).
+    Si foto_bytes está presente, adjunta la imagen al ticket vía multipart/form-data."""
     if not FRESHDESK_API_KEY or not FRESHDESK_DOMAIN:
         logger.error("Freshdesk no configurado (falta API key o domain)")
         return False, "Freshdesk no está configurado"
 
     url = f"https://{FRESHDESK_DOMAIN}/api/v2/tickets"
 
-    payload = {
+    data = {
         "email": email_solicitante,
         "subject": asunto,
         "description": descripcion,
-        "status": 2,  # Open
+        "status": "2",  # Open
     }
 
     if familia in FRESHDESK_GROUP_IDS:
-        payload["group_id"] = FRESHDESK_GROUP_IDS[familia]
+        data["group_id"] = str(FRESHDESK_GROUP_IDS[familia])
 
     if familia == "Euroking" and equipo_type:
         # Freshdesk asigna prioridad automáticamente según el Type/Equipo
-        payload["type"] = equipo_type
+        data["type"] = equipo_type
     elif prioridad:
-        payload["priority"] = PRIORIDADES_FRESHDESK.get(prioridad.lower(), 2)
+        data["priority"] = str(PRIORIDADES_FRESHDESK.get(prioridad.lower(), 2))
     else:
-        payload["priority"] = 2  # Media por defecto
+        data["priority"] = "2"  # Media por defecto
 
     try:
-        response = requests.post(url, json=payload, auth=(FRESHDESK_API_KEY, "X"), timeout=15)
+        if foto_bytes:
+            files = {"attachments[]": ("foto_problema.jpg", foto_bytes, "image/jpeg")}
+            response = requests.post(url, data=data, files=files, auth=(FRESHDESK_API_KEY, "X"), timeout=30)
+        else:
+            response = requests.post(url, json=data, auth=(FRESHDESK_API_KEY, "X"), timeout=15)
+
         if response.status_code == 201:
             ticket_data = response.json()
             return True, ticket_data.get("id")
@@ -767,6 +777,7 @@ REGLAS IMPORTANTES:
 conversaciones = {}
 nombres_usuarios = {}
 stickers_enviados = {}  # Rastrea stickers ya enviados por usuario
+fotos_usuario = {}  # Guarda la última foto (bytes) enviada por cada usuario para adjuntar a tickets
 
 client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 sheet = init_google_sheets()
@@ -807,6 +818,13 @@ async def manejar_foto(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         photo = update.message.photo[-1]
         imagen_base64 = await descargar_foto_base64(photo, context)
+
+        # Guardar la foto en bytes para poder adjuntarla a un ticket si se necesita
+        try:
+            import base64 as _base64
+            fotos_usuario[user_id] = _base64.standard_b64decode(imagen_base64)
+        except Exception as e:
+            logger.error(f"No se pudo guardar foto para ticket: {e}")
 
         mensaje_con_imagen = {
             "role": "user",
@@ -885,7 +903,7 @@ async def manejar_mensaje(update: Update, context: ContextTypes.DEFAULT_TYPE):
         respuesta_completa = response.content[0].text
 
         # Procesar creación de ticket si Claude incluyó la etiqueta [CREAR_TICKET:...]
-        respuesta_completa, mensaje_ticket = await procesar_creacion_ticket(respuesta_completa)
+        respuesta_completa, mensaje_ticket = await procesar_creacion_ticket(respuesta_completa, user_id)
 
         # Agregar respuesta al historial (sin la etiqueta, ya removida)
         conversaciones[user_id].append({
@@ -963,7 +981,7 @@ async def enviar_sticker_contextual(update, context, respuesta, user_id):
             return
 
 
-async def procesar_creacion_ticket(respuesta_completa):
+async def procesar_creacion_ticket(respuesta_completa, user_id=None):
     """Busca la etiqueta [CREAR_TICKET:...] en la respuesta, crea el ticket si existe,
     y devuelve (texto_limpio, mensaje_resultado_ticket_o_None)"""
     import re as _re
@@ -993,6 +1011,9 @@ async def procesar_creacion_ticket(respuesta_completa):
         else:
             prioridad = prioridad_o_equipo
 
+        # Si el usuario mandó una foto durante la conversación, adjuntarla al ticket
+        foto_bytes = fotos_usuario.get(user_id) if user_id is not None else None
+
         exito, resultado = crear_ticket_freshdesk(
             email_solicitante=correo,
             familia=familia,
@@ -1001,6 +1022,7 @@ async def procesar_creacion_ticket(respuesta_completa):
             descripcion=descripcion,
             prioridad=prioridad,
             equipo_type=equipo_type,
+            foto_bytes=foto_bytes,
         )
 
         if exito:
