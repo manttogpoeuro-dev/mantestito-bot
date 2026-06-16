@@ -312,6 +312,7 @@ def crear_ticket_freshdesk(email_solicitante, familia, unidad_negocio, asunto, d
                 form_data["group_id"] = str(FRESHDESK_GROUP_IDS[familia])
             if familia == "Euroking" and equipo_type:
                 form_data["type"] = equipo_type
+                form_data["priority"] = "1"  # Freshdesk auto-asigna según el tipo/equipo
             elif prioridad:
                 form_data["priority"] = str(PRIORIDADES_FRESHDESK.get(prioridad.lower(), 2))
             else:
@@ -330,6 +331,7 @@ def crear_ticket_freshdesk(email_solicitante, familia, unidad_negocio, asunto, d
                 json_data["group_id"] = FRESHDESK_GROUP_IDS[familia]
             if familia == "Euroking" and equipo_type:
                 json_data["type"] = equipo_type
+                json_data["priority"] = 1  # Freshdesk auto-asigna según el tipo/equipo
             elif prioridad:
                 json_data["priority"] = PRIORIDADES_FRESHDESK.get(prioridad.lower(), 2)
             else:
