@@ -169,7 +169,7 @@ UNIDADES_NEGOCIO = {
         ("Burger King Citadina", "gerente.bkcitadina@grupoeuro.com.mx"),
         ("Burger King San Juan", "gerente.bkgaleriassanjuan@grupoeuro.com.mx"),
         ("Burger King del parque", "bkingplazadelparque@grupoeuro.com.mx"),
-        ("Burguer King Santa Maria", "bkingstamaria@grupoeuro.com.mx"),
+        ("Burger King Santa Maria", "bkingstamaria@grupoeuro.com.mx"),
     ],
     "Novoretail": [
         ("Club KM Pocaluz", "gerente.ckpocaluz@grupoeuro.com.mx"),
@@ -242,6 +242,28 @@ def buscar_correo_unidad(familia, unidad_negocio):
     for nombre, correo in candidatos:
         if unidad_lower in nombre.lower() or nombre.lower() in unidad_lower:
             return nombre, correo
+
+    # Coincidencia por palabras clave significativas (ignora BK/Burger King/Max Store etc.)
+    import re as _re
+    stop_words = {"burger", "king", "bk", "max", "store", "club", "km", "kilometro",
+                  "kilometros", "eurollantas", "mingo", "italian", "coffee", "the", "de",
+                  "la", "el", "los", "las", "y", "e"}
+    palabras_busqueda = set(_re.findall(r'[a-záéíóúüñ]+', unidad_lower)) - stop_words
+
+    mejor_match = None
+    mejor_score = 0
+    for nombre, correo in candidatos:
+        palabras_nombre = set(_re.findall(r'[a-záéíóúüñ]+', nombre.lower())) - stop_words
+        if not palabras_busqueda or not palabras_nombre:
+            continue
+        coincidencias = palabras_busqueda & palabras_nombre
+        score = len(coincidencias) / max(len(palabras_busqueda), len(palabras_nombre))
+        if score > mejor_score:
+            mejor_score = score
+            mejor_match = (nombre, correo)
+
+    if mejor_match and mejor_score >= 0.4:
+        return mejor_match
 
     # Fallback para Corporativo: si no se encontró coincidencia, usar Asistente Dirección
     if familia == "Corporativo":
