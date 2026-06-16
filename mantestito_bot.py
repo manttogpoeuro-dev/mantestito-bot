@@ -301,10 +301,40 @@ def crear_ticket_freshdesk(email_solicitante, familia, unidad_negocio, asunto, d
 
     try:
         if foto_bytes:
+            # Con foto: multipart/form-data (todos los campos como strings)
+            form_data = {
+                "email": email_solicitante,
+                "subject": asunto,
+                "description": descripcion,
+                "status": "2",
+            }
+            if familia in FRESHDESK_GROUP_IDS:
+                form_data["group_id"] = str(FRESHDESK_GROUP_IDS[familia])
+            if familia == "Euroking" and equipo_type:
+                form_data["type"] = equipo_type
+            elif prioridad:
+                form_data["priority"] = str(PRIORIDADES_FRESHDESK.get(prioridad.lower(), 2))
+            else:
+                form_data["priority"] = "2"
             files = {"attachments[]": ("foto_problema.jpg", foto_bytes, "image/jpeg")}
-            response = requests.post(url, data=data, files=files, auth=(FRESHDESK_API_KEY, "X"), timeout=30)
+            response = requests.post(url, data=form_data, files=files, auth=(FRESHDESK_API_KEY, "X"), timeout=30)
         else:
-            response = requests.post(url, json=data, auth=(FRESHDESK_API_KEY, "X"), timeout=15)
+            # Sin foto: JSON con tipos correctos (integers)
+            json_data = {
+                "email": email_solicitante,
+                "subject": asunto,
+                "description": descripcion,
+                "status": 2,
+            }
+            if familia in FRESHDESK_GROUP_IDS:
+                json_data["group_id"] = FRESHDESK_GROUP_IDS[familia]
+            if familia == "Euroking" and equipo_type:
+                json_data["type"] = equipo_type
+            elif prioridad:
+                json_data["priority"] = PRIORIDADES_FRESHDESK.get(prioridad.lower(), 2)
+            else:
+                json_data["priority"] = 2
+            response = requests.post(url, json=json_data, auth=(FRESHDESK_API_KEY, "X"), timeout=15)
 
         if response.status_code == 201:
             ticket_data = response.json()
