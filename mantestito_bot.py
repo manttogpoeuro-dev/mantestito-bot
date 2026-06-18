@@ -170,6 +170,7 @@ UNIDADES_NEGOCIO = {
         ("Burger King San Juan", "gerente.bkgaleriassanjuan@grupoeuro.com.mx"),
         ("Burger King del parque", "bkingplazadelparque@grupoeuro.com.mx"),
         ("Burger King Santa Maria", "bkingstamaria@grupoeuro.com.mx"),
+        ("BK COLON", "gerente.bkcolontoluca@grupoeuro.com.mx"),
     ],
     "Novoretail": [
         ("Club KM Pocaluz", "gerente.ckpocaluz@grupoeuro.com.mx"),
@@ -795,7 +796,7 @@ CUANDO EL DIAGNÓSTICO NO SE PUEDA RESOLVER (familias distintas a Gasomax):
 UNIDADES DE NEGOCIO DISPONIBLES (usa el nombre EXACTO como aparece aquí):
   * Corporativo: Asistente Direccion, Gerente Sistemas, Sanjuana Bautista, Seguridad e Higiene
   * Eurollantas: Asistente Compras, Erik García Rico, Eurollantas Carranza, Eurollantas Zacatecas, Eurollantas Muñoz, Eurollantas Glorieta, Gerente Logistica, Gerente Honda, Honda, Importadora
-  * Euroking: BK ARAGON, BK ATLIXCO, BK PERINORTE, BK GALERIAS CUERNAVACA, BK GALERIAS SERDAN, BK GALERIAS ATIZAPAN, BK GALERIAS TOLUCA, BK PATIO TOLUCA, BK PLAZA PLATINO, BK PLAZA FORUM CUERNAVACA, BK PUEBLA CENTRO, BK SANTA FE, BK SANTIAGO TIANGUISTENGO, BK TOLUCA SENDERO, BK TOLUCA I PLAZA LAS AMERICAS, BK CUERNAVACA PLAN DE AYALA, BK TOLUCA II GALERIAS METEPEC, BK TOLUCA IV ALFREDO DEL MAZO, BK TOLUCA SENDERO 2, Burger King Pocaluz, Burger King Citadella, Burger King Aerogas, Burger King Tecnologico, Burger King Citadina, Burger King San Juan, Burger King del parque, Burguer King Santa Maria
+  * Euroking: BK ARAGON, BK ATLIXCO, BK PERINORTE, BK GALERIAS CUERNAVACA, BK GALERIAS SERDAN, BK GALERIAS ATIZAPAN, BK GALERIAS TOLUCA, BK PATIO TOLUCA, BK PLAZA PLATINO, BK PLAZA FORUM CUERNAVACA, BK PUEBLA CENTRO, BK SANTA FE, BK SANTIAGO TIANGUISTENGO, BK TOLUCA SENDERO, BK TOLUCA I PLAZA LAS AMERICAS, BK CUERNAVACA PLAN DE AYALA, BK TOLUCA II GALERIAS METEPEC, BK TOLUCA IV ALFREDO DEL MAZO, BK TOLUCA SENDERO 2, Burger King Pocaluz, Burger King Citadella, Burger King Aerogas, Burger King Tecnologico, Burger King Citadina, Burger King San Juan, Burger King del parque, Burguer King Santa Maria, BK COLON
   * Novoretail: Club KM Pocaluz, Club KM Hacienda 14, Club Kilometro Hacienda, Club Kilometros Europits, Distrital Novo Region Norte, Gerente distrital Matehuala, Max Store Hacienda, Max Store Europits, Max Store Aerogas, Max Store Eurogas, Max Store La Carreta, Max Store Santa Maria, Patio Troje Santa Maria, Super All
   * AYB Mingo: Hogazza, Hojaldre, MINGO Carranza, MINGO Dorado, MINGO Citadina, MINGO Aerogas, MINGO Eurogas, MINGO La Hacienda, MINGO Santa Maria, SUBWAY, The Italian Coffee Europits, The Italian Coffee Sendero
 
