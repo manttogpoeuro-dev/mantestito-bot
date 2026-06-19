@@ -979,13 +979,17 @@ async def manejar_mensaje(update: Update, context: ContextTypes.DEFAULT_TYPE):
         # Procesar la respuesta para detectar imágenes y videos
         await procesar_y_enviar(update, context, respuesta_completa, user_id)
 
-        # Si se creó un ticket, enviar el resultado como mensaje adicional
+        # Si se creó un ticket, enviar el resultado y guardarlo en historial y Sheets
         if mensaje_ticket:
             await update.message.reply_text(mensaje_ticket)
+            # Guardar en historial como mensaje del sistema (no de Claude)
+            # para que Claude no lo repita en mensajes posteriores
             conversaciones[user_id].append({
-                "role": "assistant",
-                "content": mensaje_ticket
+                "role": "user",
+                "content": f"[SISTEMA]: {mensaje_ticket}"
             })
+            # Guardar en Google Sheets
+            guardar_conversacion(sheet, nombre_usuario, user_id, "[SISTEMA - Resultado ticket]", mensaje_ticket)
 
     except Exception as e:
         logger.error(f"Error al llamar a Claude: {e}")
