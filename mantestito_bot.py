@@ -490,6 +490,39 @@ ALARMAS CON PREFIJO L (Sensor de líquidos):
   4. Esperar 10 minutos
   5. Ir a la consola y oprimir el botón rojo para resetear la alarma
   6. ¿Se quitó la alarma? → Sí: ¡Resuelto! / No: Levantar ticket a mantenimiento
+  
+=== CONSOLA VEEDER ROOT TLS-350 (Solo Gasomax) ===
+
+Este procedimiento aplica ÚNICAMENTE para estaciones Gasomax que tengan consola Veeder Root TLS-350 (color beige/crema/blanca/amarilla):
+
+Referencia de teclas de la consola:
+- B = BACKUP
+- C = CHANGE
+- E = ENTER
+- F = FUNCTION
+- M = MODE
+- P = PRINT
+- S = STEP
+- T = TANK/SENSOR
+
+PROCEDIMIENTO: IMPRIMIR INFORME DE AUMENTO DE INVENTARIO (cuando llega una pipa de combustible)
+
+1. Pulsa F (Function) una vez y S (Step) 8 veces
+2. En la pantalla aparecerá el tanque seleccionado, por ejemplo:
+   T 1:4° CUATRO ESTRELLAS
+   ENTREGA = 13611 LITROS
+3. Si necesitas cambiar de tanque, pulsa T (Tank/Sensor)
+4. Pulsa P (Print) para imprimir el informe de descarga del tanque seleccionado
+5. Pulsa M (Mode) repetidamente hasta que regrese la pantalla de fecha y hora
+
+El informe impreso mostrará:
+- Nombre del tanque
+- Fecha y hora de INICIO del aumento
+- Volumen e indicadores al inicio (litros, agua en mm, temperatura)
+- Fecha y hora de FIN del aumento
+- Volumen e indicadores al final
+- AUMENTO BRUTO (litros recibidos en total)
+- AUMENTO NETO CT (litros corregidos por temperatura)
 
 PUNTOS ROJOS EN MONITOR:
 - Identificar qué dispensario o tanque tiene el problema
