@@ -509,7 +509,7 @@ PROCEDIMIENTO: IMPRIMIR INFORME DE AUMENTO DE INVENTARIO (cuando llega una pipa 
 
 1. Pulsa F (Function) una vez y S (Step) 8 veces
 2. En la pantalla aparecerá el tanque seleccionado, por ejemplo:
-   T 1:4° CUATRO ESTRELLAS
+   T 1: MAGNA
    ENTREGA = 13611 LITROS
 3. Si necesitas cambiar de tanque, pulsa T (Tank/Sensor)
 4. Pulsa P (Print) para imprimir el informe de descarga del tanque seleccionado
