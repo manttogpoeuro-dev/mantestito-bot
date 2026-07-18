@@ -100,16 +100,6 @@ IMAGENES = {
 
 # Stickers de Mantestito
 STICKERS = {
-    "gracias": "CAACAgEAAxkBAAIJcmoLJbcGv-50L0Vxm95H9uwg_nBLAAI-BwACweNRRFl740NNdtzfOwQ",
-    "empecemos": "CAACAgEAAxkBAAIJgGoLLImOIBLaOoy3KMMYeq-YTOmaAALRBwACs4BQRF-UdFeUjxYVOwQ",
-    "llave_palomita": "CAACAgEAAxkBAAIJgmoLLIv30LnQZr5abp3kpGHw-SpvAAKoCAACWO5YRDJS_CGD65WKOwQ",
-    "saludo_militar": "CAACAgEAAxkBAAIJhGoLLI37pagpPVjUTPGrmreVmi1IAAJBBwACtJJRRKSnj8jy3AJ7OwQ",
-    "a_trabajar": "CAACAgEAAxkBAAIJd2oLJ-R7bB7tAuLp8lkuVw6fW4vrAAIbBwACBSlRRJ-kzNwe9d36OwQ",
-}
-
-
-# Stickers de Mantestito
-STICKERS = {
     "empecemos": "CAACAgEAAxkBAAIJgGoLLImOIBLaOoy3KMMYeq-YTOmaAALRBwACs4BQRF-UdFeUjxYVOwQ",
     "a_trabajar": "CAACAgEAAxkBAAIJd2oLJ-R7bB7tAuLp8lkuVw6fW4vrAAIbBwACBSlRRJ-kzNwe9d36OwQ",
     "llave_palomita": "CAACAgEAAxkBAAIJgmoLLIv30LnQZr5abp3kpGHw-SpvAAKoCAACWO5YRDJS_CGD65WKOwQ",
@@ -803,19 +793,19 @@ Paso 6 - Prueba final en la máquina de refresco:
 
 
 LEVANTAMIENTO DE TICKETS AUTOMÁTICO (Euroking, Eurollantas, AYB Mingo, Novoretail, Corporativo):
-- Para estas 5 familias, Mantestito puede crear el ticket automáticamente, NO compartas el link de Freshdesk para estas familias.
+- Para estas 5 familias, Mantestito SIEMPRE debe ofrecer crear el ticket automáticamente. NUNCA des el link de Freshdesk para estas familias. NUNCA digas "puedes crear el ticket en...". SIEMPRE ofrece hacerlo tú.
 - Familia Gasomax: SIGUE igual que antes, NO se crea ticket automático, recomienda crear el ticket manualmente en https://region1.portalcsm.com/Main/Login
 
 CUANDO EL DIAGNÓSTICO NO SE PUEDA RESOLVER (familias distintas a Gasomax):
-1. Pregunta amablemente al usuario si desea que se levante un ticket
-2. Si acepta, muéstrale un resumen breve de lo que incluirá el ticket: unidad de negocio, descripción del problema, y lo que ya se intentó
+1. SIEMPRE ofrece crear el ticket automáticamente: "¿Quieres que levante el ticket por ti ahora mismo?"
+2. Si acepta, muéstrale un resumen breve: unidad de negocio, descripción del problema, pasos intentados
 3. Pide confirmación explícita ("¿confirmas que levante el ticket con esta información?")
-4. Si el usuario confirma, responde con un mensaje breve de confirmación y agrega al FINAL de tu respuesta, en una línea separada, exactamente:
-   [CREAR_TICKET:familia|unidad_negocio|asunto|descripcion|prioridad_o_equipo]
+4. Si el usuario confirma, responde SOLO con "Perfecto, procesando tu solicitud... ⚙️" y agrega al FINAL en una línea separada:
+   [CREAR_TICKET:familia|correo_gerente|asunto|descripcion|prioridad_o_equipo]
 
    Donde:
    - familia: una de Euroking, Eurollantas, AYB Mingo, Novoretail, Corporativo (tal como las conoces)
-   - unidad_negocio: el nombre EXACTO de la lista de unidades de negocio de esa familia (ver abajo)
+   - correo_gerente: el correo EXACTO del gerente de la unidad donde está el problema (ver lista abajo). SIEMPRE muestra al usuario el nombre de la unidad Y su correo en el resumen de confirmación para que verifique que es la correcta. Si el usuario reporta un problema en una unidad diferente a la del inicio, usa el correo de ESA unidad.
    - asunto: título corto del problema (máx 80 caracteres)
    - descripcion: resumen del problema y los pasos ya intentados
    - prioridad_o_equipo: ESTE ES UN SOLO CAMPO, no dos. Pon UNO de los siguientes:
@@ -826,12 +816,79 @@ CUANDO EL DIAGNÓSTICO NO SE PUEDA RESOLVER (familias distintas a Gasomax):
    CORRECTO:   [CREAR_TICKET:Euroking|BK ATLIXCO|Drenaje tapado|descripcion aqui|Desazolve (drenaje)]
    INCORRECTO: [CREAR_TICKET:Euroking|BK ATLIXCO|Drenaje tapado|descripcion aqui|urgente|Desazolve (drenaje)]
 
-UNIDADES DE NEGOCIO DISPONIBLES (usa el nombre EXACTO como aparece aquí):
-  * Corporativo: Asistente Direccion, Gerente Sistemas, Sanjuana Bautista, Seguridad e Higiene
-  * Eurollantas: Asistente Compras, Erik García Rico, Eurollantas Carranza, Eurollantas Zacatecas, Eurollantas Muñoz, Eurollantas Glorieta, Gerente Logistica, Gerente Honda, Honda, Importadora
-  * Euroking: BK ARAGON, BK ATLIXCO, BK PERINORTE, BK GALERIAS CUERNAVACA, BK GALERIAS SERDAN, BK GALERIAS ATIZAPAN, BK GALERIAS TOLUCA, BK PATIO TOLUCA, BK PLAZA PLATINO, BK PLAZA FORUM CUERNAVACA, BK PUEBLA CENTRO, BK SANTA FE, BK SANTIAGO TIANGUISTENGO, BK TOLUCA SENDERO, BK TOLUCA I PLAZA LAS AMERICAS, BK CUERNAVACA PLAN DE AYALA, BK TOLUCA II GALERIAS METEPEC, BK TOLUCA IV ALFREDO DEL MAZO, BK TOLUCA SENDERO 2, Burger King Pocaluz, Burger King Citadella, Burger King Aerogas, Burger King Tecnologico, Burger King Citadina, Burger King San Juan, Burger King del parque, Burguer King Santa Maria, BK COLON
-  * Novoretail: Club KM Pocaluz, Club KM Hacienda 14, Club Kilometro Hacienda, Club Kilometros Europits, Distrital Novo Region Norte, Gerente distrital Matehuala, Max Store Hacienda, Max Store Europits, Max Store Aerogas, Max Store Eurogas, Max Store La Carreta, Max Store Santa Maria, Patio Troje Santa Maria, Super All
-  * AYB Mingo: Hogazza, Hojaldre, MINGO Carranza, MINGO Dorado, MINGO Citadina, MINGO Aerogas, MINGO Eurogas, MINGO La Hacienda, MINGO Santa Maria, SUBWAY, The Italian Coffee Europits, The Italian Coffee Sendero
+UNIDADES DE NEGOCIO DISPONIBLES (nombre → correo del gerente):
+  * Corporativo:
+    - Asistente Direccion → asistentedireccion@grupoeuro.com.mx
+    - Gerente Sistemas → gerente.sistemas@grupoeuro.com.mx
+    - Sanjuana Bautista → coordinador.mantenimiento@grupoeuro.com.mx
+    - Seguridad e Higiene → seguridadehigiene@grupoeuro.com.mx
+  * Eurollantas:
+    - Eurollantas Carranza → gerencia.carranza@eurollantas.com.mx
+    - Eurollantas Zacatecas → ventas.zacatecas@eurollantas.com.mx
+    - Eurollantas Muñoz → gerencia.munoz@eurollantas.com.mx
+    - Eurollantas Glorieta → gerencia.glorieta@eurollantas.com.mx
+    - Asistente Compras → asistente.logistica@eurollantas.com.mx
+    - Gerente Logistica → gerente.logistica@eurollantas.com.mx
+    - Gerente Honda → motosdsanluis@grupoeuro.com.mx
+    - Honda → administracion@motosdsanluis.mx
+    - Importadora → facturacion@importadoraeuro.com
+  * Euroking:
+    - BK ARAGON → gerente.bkplazaaragon@grupoeuro.com.mx
+    - BK ATLIXCO → gerente.bkatlixco@grupoeuro.com.mx
+    - BK PERINORTE → gerente.bkgaleriasperinorte@grupoeuro.com.mx
+    - BK GALERIAS CUERNAVACA → gerente.bkgaleriascuernavaca@grupoeuro.com.mx
+    - BK GALERIAS SERDAN → gerente.bkgaleriasserdan@grupoeuro.com.mx
+    - BK GALERIAS ATIZAPAN → gerente.bkatizapan@grupoeuro.com.mx
+    - BK GALERIAS TOLUCA → gerente.bkgaleriastolloacan@grupoeuro.com.mx
+    - BK PATIO TOLUCA → gerente.bkpatio@grupoeuro.com.mx
+    - BK PLAZA PLATINO → gerente.bkplazaplatino@grupoeuro.com.mx
+    - BK PLAZA FORUM CUERNAVACA → gerente.bkforum@grupoeuro.com.mx
+    - BK PUEBLA CENTRO → gerente.bkcentropuebla@grupoeuro.com.mx
+    - BK SANTA FE → gerente.bksantafe@grupoeuro.com.mx
+    - BK SANTIAGO TIANGUISTENGO → gerente.bktianguistenco@grupoeuro.com.mx
+    - BK TOLUCA SENDERO → gerente.bksenderofs@grupoeuro.com.mx
+    - BK TOLUCA SENDERO 2 → gerente.bksenderofc@grupoeuro.com.mx
+    - BK TOLUCA I PLAZA LAS AMERICAS → gerente.bkplazaamericas@grupoeuro.com.mx
+    - BK TOLUCA II GALERIAS METEPEC → gerente.bkgaleriasmetepec@grupoeuro.com.mx
+    - BK TOLUCA IV ALFREDO DEL MAZO → gerente.bkalfredo@grupoeuro.com.mx
+    - BK CUERNAVACA PLAN DE AYALA → gerente.bkplandeayala@grupoeuro.com.mx
+    - Burger King Pocaluz → gerente.bkmatehuala1@grupoeuro.com.mx
+    - Burger King Citadella → gerentebk.citadela@grupoeuro.com.mx
+    - Burger King Aerogas → gerente.bkaerogas@grupoeuro.com.mx
+    - Burger King Tecnologico → gerente.bktecnologico@grupoeuro.com.mx
+    - Burger King Citadina → gerente.bkcitadina@grupoeuro.com.mx
+    - Burger King San Juan → gerente.bkgaleriassanjuan@grupoeuro.com.mx
+    - Burger King del parque → bkingplazadelparque@grupoeuro.com.mx
+    - Burger King Santa Maria → bkingstamaria@grupoeuro.com.mx
+    - BK COLON → gerente.bkcolontoluca@grupoeuro.com.mx
+  * Novoretail:
+    - Club KM Pocaluz → gerente.ckpocaluz@grupoeuro.com.mx
+    - Club KM Hacienda 14 → gerente.ckh14@grupoeuro.com.mx
+    - Club Kilometro Hacienda → regaderas.hacienda@grupoeuro.com.mx
+    - Club Kilometros Europits → gerente.ckeuropits@grupoeuro.com.mx
+    - Distrital Novo Region Norte → gerente.distritalnorte@grupoeuro.com.mx
+    - Gerente distrital Matehuala → gerentedist.matehuala@grupoeuro.com.mx
+    - Max Store Hacienda → gerente.maxsta2@grupoeuro.com.mx
+    - Max Store Europits → gerente.maxeuropits@grupoeuro.com.mx
+    - Max Store Aerogas → gerente.maxaerogas@grupoeuro.com.mx
+    - Max Store Eurogas → gerente.maxeurogas@grupoeuro.com.mx
+    - Max Store La Carreta → max.lacarreta@grupoeuro.com.mx
+    - Max Store Santa Maria → gerente.maxsta1@grupoeuro.com.mx
+    - Patio Troje Santa Maria → gerente.latroje@grupoeuro.com.mx
+    - Super All → gerente.superall@grupoeuro.com.mx
+  * AYB Mingo:
+    - Hogazza → gerente.hogazza@grupoeuro.com.mx
+    - Hojaldre → gerente.hojaldre@grupoeuro.com.mx
+    - MINGO Carranza → mingo@grupoeuro.com.mx
+    - MINGO Dorado → italian.dorado@grupoeuro.com.mx
+    - MINGO Citadina → gerenteic.citadina@grupoeuro.com.mx
+    - MINGO Aerogas → fact.italiancoffee.aerogas@grupoeuro.com.mx
+    - MINGO Eurogas → fact.italian.eurogas@grupoeuro.com.mx
+    - MINGO La Hacienda → fact.italiancoffee.santamaria2@grupoeuro.com.mx
+    - MINGO Santa Maria → italianc.santamaria@grupoeuro.com.mx
+    - SUBWAY → gerencia.subway1@grupoeuro.com.mx
+    - The Italian Coffee Europits → italiancoffee.europits@grupoeuro.com.mx
+    - The Italian Coffee Sendero → italiancoffeeslp@grupoeuro.com.mx
 
 EQUIPOS/INSTALACIONES DISPONIBLES PARA EUROKING (Type, usa el nombre EXACTO):
 PHU, Aire acondicionado, Calentador, Sistema filtrado (agua purificada), Cuna de papa, Trampas de grasas, Hornos, Tostadores, Maquina hielos, Hidroneumatico, Wc mingitorios, Broiler, Freidoras, Taylor, Camaras, Portatiles, Extraccion, Desazolve (drenaje), Luminarias, Area de juegos, Extractor de baños, Electricidad, Secadores baños, Fluxometros, Tarjas, Tableros Electricos, Mezcladoras, Chapas, Contactos Electricos, Lavamanos, Candados, Anuncios luminosos, Edificio, Cortinas, Espectaculares, Mesas sillas, Pintura, Plafones
@@ -843,6 +900,40 @@ REGLAS CRÍTICAS PARA TICKETS - DEBES SEGUIRLAS SIN EXCEPCIÓN:
 4. NUNCA escribas frases como "Se creó el ticket #XXXX", "El equipo fue notificado", "¡Listo!" después de confirmar — eso lo hace el sistema automáticamente en un mensaje separado.
 5. Tu único trabajo al confirmar es escribir "Perfecto, procesando tu solicitud... ⚙️" y la etiqueta. El sistema hará el resto.
 6. Si escribes CUALQUIER cosa después de la etiqueta o inventas un número de ticket, estarás mintiendo al usuario.
+
+
+=== CONSOLA VEEDER ROOT TLS-350 (Solo Gasomax) ===
+
+Este procedimiento aplica ÚNICAMENTE para estaciones Gasomax que tengan consola Veeder Root TLS-350.
+
+Referencia de teclas de la consola:
+- B = BACKUP
+- C = CHANGE
+- E = ENTER
+- F = FUNCTION
+- M = MODE
+- P = PRINT
+- S = STEP
+- T = TANK/SENSOR
+
+PROCEDIMIENTO: IMPRIMIR INFORME DE AUMENTO DE INVENTARIO (cuando llega una pipa de combustible)
+
+1. Pulsa F (Function) una vez y S (Step) 8 veces
+2. En la pantalla aparecerá el tanque seleccionado, por ejemplo:
+   T 1:4° CUATRO ESTRELLAS
+   ENTREGA = 13611 LITROS
+3. Si necesitas cambiar de tanque, pulsa T (Tank/Sensor)
+4. Pulsa P (Print) para imprimir el informe de descarga del tanque seleccionado
+5. Pulsa M (Mode) repetidamente hasta que regrese la pantalla de fecha y hora
+
+El informe impreso mostrará:
+- Nombre del tanque
+- Fecha y hora de INICIO del aumento
+- Volumen e indicadores al inicio (litros, agua en mm, temperatura)
+- Fecha y hora de FIN del aumento
+- Volumen e indicadores al final
+- AUMENTO BRUTO (litros recibidos en total)
+- AUMENTO NETO CT (litros corregidos por temperatura)
 
 LÍMITES DE COMPETENCIA - MUY IMPORTANTE:
 Cuando el usuario reporte problemas con impresoras, computadoras, POS, internet, red o cualquier equipo de cómputo/tecnología, Mantestito PRIMERO verifica los aspectos básicos de mantenimiento que Sistemas siempre pregunta:
@@ -1111,12 +1202,18 @@ async def procesar_creacion_ticket(respuesta_completa, user_id=None):
             logger.error(f"Formato de CREAR_TICKET inválido: {match.group(1)}")
             return texto_limpio, None
 
-        familia, unidad_negocio, asunto, descripcion, prioridad_o_equipo = [p.strip() for p in partes]
+        familia, correo_gerente, asunto, descripcion, prioridad_o_equipo = [p.strip() for p in partes]
 
-        nombre_oficial, correo = buscar_correo_unidad(familia, unidad_negocio)
-        if not correo:
-            logger.error(f"No se encontró correo para familia={familia} unidad={unidad_negocio}")
-            return texto_limpio, "⚠️ No pude identificar la unidad de negocio para crear el ticket. Por favor levanta el ticket manualmente o contacta al coordinador de mantenimiento."
+        # El correo viene directo en la etiqueta, solo validamos que tenga @
+        correo = correo_gerente
+        if '@' not in correo:
+            # Fallback: intentar buscar por nombre si Claude puso un nombre en lugar de correo
+            nombre_oficial, correo = buscar_correo_unidad(familia, correo_gerente)
+            if not correo:
+                logger.error(f"No se encontró correo para familia={familia} valor={correo_gerente}")
+                return texto_limpio, "⚠️ No pude identificar la unidad de negocio para crear el ticket. Por favor levanta el ticket manualmente o contacta al coordinador de mantenimiento."
+        else:
+            nombre_oficial = correo_gerente  # ya viene el correo directamente
 
         equipo_type = None
         prioridad = None
