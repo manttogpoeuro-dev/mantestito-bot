@@ -24,13 +24,6 @@ FRESHDESK_GROUP_IDS = {
     "Eurollantas": 154000227857,
     "Novoretail": 154000227836,
 }
-FRESHDESK_COMPANY_IDS = {
-    "AYB Mingo": 154000631817,
-    "Corporativo": 154000632157,
-    "Euroking": 154000631788,
-    "Eurollantas": 154000631831,
-    "Novoretail": 154000631786,
-}
 # ============================================================
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -308,8 +301,6 @@ def crear_ticket_freshdesk(email_solicitante, familia, unidad_negocio, asunto, d
             }
             if familia in FRESHDESK_GROUP_IDS:
                 form_data["group_id"] = str(FRESHDESK_GROUP_IDS[familia])
-            if familia in FRESHDESK_COMPANY_IDS:
-                form_data["company_id"] = str(FRESHDESK_COMPANY_IDS[familia])
             if familia == "Euroking" and equipo_type:
                 form_data["type"] = equipo_type
                 form_data["priority"] = "1"  # Freshdesk auto-asigna según el tipo/equipo
@@ -329,8 +320,6 @@ def crear_ticket_freshdesk(email_solicitante, familia, unidad_negocio, asunto, d
             }
             if familia in FRESHDESK_GROUP_IDS:
                 json_data["group_id"] = FRESHDESK_GROUP_IDS[familia]
-            if familia in FRESHDESK_COMPANY_IDS:
-                json_data["company_id"] = FRESHDESK_COMPANY_IDS[familia]
             if familia == "Euroking" and equipo_type:
                 json_data["type"] = equipo_type
                 json_data["priority"] = 1  # Freshdesk auto-asigna según el tipo/equipo
